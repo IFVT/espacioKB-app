@@ -9,6 +9,8 @@ export interface Extra {
   price: number;
   /** true = el precio se multiplica por las horas; false = precio único. */
   perHour: boolean;
+  /** Ruta de la foto del equipo en /public (opcional). */
+  image?: string;
 }
 
 export interface Space {
@@ -21,6 +23,8 @@ export interface Space {
   extras: Extra[];
   /** La tarifa base ya incluye conectar el celular al sistema de audio. */
   includesPhone: boolean;
+  /** Ruta de la foto de la sala en /public. */
+  image: string;
 }
 
 export const SPACES: Record<SpaceId, Space> = {
@@ -32,6 +36,7 @@ export const SPACES: Record<SpaceId, Space> = {
     hourly: { 2: 180000, 3: 270000, 4: 360000, 5: 450000, 6: 540000, 7: 630000 },
     extras: [],
     includesPhone: true,
+    image: "/img/karaoke.jpg",
   },
   casita: {
     id: "casita",
@@ -46,16 +51,25 @@ export const SPACES: Record<SpaceId, Space> = {
         name: "2 Tornamesas Technics 1200 + Mixer Pioneer 320 (no incluye agujas)",
         price: 500000,
         perHour: false,
+        image: "/img/extra-tornamesas.jpg",
       },
-      { id: "rx3", name: "Controlador Pioneer RX3", price: 450000, perHour: false },
+      {
+        id: "rx3",
+        name: "Controlador Pioneer RX3",
+        price: 450000,
+        perHour: false,
+        image: "/img/extra-rx3.jpg",
+      },
       {
         id: "cdj",
         name: "2 CDJ Pioneer 3000 + Mixer Pioneer 900",
         price: 600000,
         perHour: false,
+        image: "/img/extra-cdj.jpg",
       },
     ],
     includesPhone: true,
+    image: "/img/casita.jpg",
   },
 };
 

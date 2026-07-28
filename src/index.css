@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
+/* Paleta de la marca Espacio KB (sitio oficial): fondo blanco, texto negro,
+   acento amarillo #FAE100, botones negros, tipografía Helvetica. */
 @theme {
-  --color-bg: #0e0e12;
-  --color-card: #17171f;
-  --color-card2: #1e1e29;
-  --color-line: #2b2b3a;
-  --color-txt: #f2f2f5;
-  --color-muted: #a0a0b0;
-  --color-accent: #e6b84f;
-  --color-accent2: #c8963a;
-  --color-ok: #3ecf8e;
+  --color-bg: #ffffff;
+  --color-card: #ffffff;
+  --color-card2: #f5f4f1;
+  --color-line: #e4e4e2;
+  --color-txt: #111111;
+  --color-muted: #6b6b6b;
+  --color-accent: #fae100;
+  --color-accent2: #000000;
+  --color-ok: #16a34a;
 
   --radius-kb: 16px;
 }
@@ -24,6 +26,6 @@ body {
   margin: 0;
   background-color: var(--color-bg);
   color: var(--color-txt);
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.5;
 }

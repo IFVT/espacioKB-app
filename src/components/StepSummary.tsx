@@ -73,7 +73,7 @@ export default function StepSummary({
         type="button"
         disabled={paying}
         onClick={onPay}
-        className="mt-4 block w-full rounded-xl bg-accent p-3.5 text-base font-semibold text-[#1a1a1a] disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
+        className="mt-4 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         {paying ? "Redirigiendo al pago…" : `Pagar ${fmt(total)}`}
       </button>

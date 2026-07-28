@@ -1,5 +1,6 @@
 import { SPACES, HOURS_OPTIONS, type SpaceId } from "../data/spaces";
 import { fmt } from "../lib/pricing";
+import Photo from "./Photo";
 
 interface Props {
   stepNo: number;
@@ -22,28 +23,38 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, on
       >
         ← Cambiar experiencia
       </button>
-      <h3 className="mt-0 mb-4 text-lg font-semibold">{stepNo} · ¿Cuántas horas?</h3>
+      <h3 className="mt-0 mb-1 text-lg font-semibold">{stepNo} · Elige la duración</h3>
+      <p className="mb-4 text-[0.82rem] text-muted">{s.name} · tarifa por horas</p>
 
-      <select
-        value={hours}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full rounded-xl border border-line bg-card2 p-3 text-base text-txt outline-none focus:border-accent"
-      >
-        {HOURS_OPTIONS.map((h) => (
-          <option key={h} value={h}>
-            {h} horas — {fmt(s.hourly[h])}
-          </option>
-        ))}
-      </select>
+      <Photo src={s.image} alt={s.name} className="mb-4 h-44 w-full rounded-xl" />
 
-      <div className="mt-3 rounded-xl bg-card2 p-3.5 text-[0.82rem] text-muted">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+        {HOURS_OPTIONS.map((h) => {
+          const isSel = hours === h;
+          return (
+            <button
+              key={h}
+              type="button"
+              onClick={() => onChange(h)}
+              className={`cursor-pointer rounded-xl border-2 p-3 text-left transition ${
+                isSel ? "border-accent2 bg-card2" : "border-line hover:border-accent2"
+              }`}
+            >
+              <div className="text-sm font-semibold">{h} horas</div>
+              <div className="mt-1 text-[0.95rem] font-bold">{fmt(s.hourly[h])}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 rounded-xl bg-card2 p-3.5 text-[0.82rem] text-muted">
         Tarifa del espacio por {hours} horas. El consumo mínimo se paga aparte en el lugar.
       </div>
 
       <button
         type="button"
         onClick={onNext}
-        className="mt-3 block w-full rounded-xl bg-accent p-3.5 text-base font-semibold text-[#1a1a1a]"
+        className="mt-3 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800"
       >
         Continuar
       </button>

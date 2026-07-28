@@ -1,5 +1,6 @@
 import { SPACES, type SpaceId } from "../data/spaces";
 import { fmt } from "../lib/pricing";
+import Photo from "./Photo";
 
 interface Props {
   stepNo: number;
@@ -61,15 +62,16 @@ export default function StepExtras({
                   type="checkbox"
                   checked={on}
                   onChange={() => onToggle(ex.id)}
-                  className="h-[18px] w-[18px] accent-accent"
+                  className="h-[18px] w-[18px] accent-black"
                 />
+                <Photo src={ex.image} alt={ex.name} className="h-14 w-14 shrink-0 rounded-lg" />
                 <span className="flex-1 text-sm">
                   {ex.name}
                   <span className="block text-[0.72rem] text-muted">
                     {ex.perHour ? "por hora" : "precio único"}
                   </span>
                 </span>
-                <span className="whitespace-nowrap font-semibold text-accent">
+                <span className="whitespace-nowrap font-semibold text-txt">
                   {fmt(ex.price)}
                   {ex.perHour ? " /h" : ""}
                 </span>
@@ -83,7 +85,7 @@ export default function StepExtras({
                 type="checkbox"
                 checked={acceptEquip}
                 onChange={(e) => onAcceptEquip(e.target.checked)}
-                className="mt-0.5 h-[18px] w-[18px] accent-accent"
+                className="mt-0.5 h-[18px] w-[18px] accent-black"
               />
               <span>
                 Acepto que respondo por cualquier daño a los equipos alquilados
@@ -98,7 +100,7 @@ export default function StepExtras({
         type="button"
         disabled={blocked}
         onClick={onNext}
-        className="mt-4 block w-full rounded-xl bg-accent p-3.5 text-base font-semibold text-[#1a1a1a] disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
+        className="mt-4 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         Continuar
       </button>

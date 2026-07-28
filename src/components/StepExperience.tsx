@@ -1,5 +1,6 @@
 import { SPACES, POLICIES, type SpaceId } from "../data/spaces";
 import { fmt } from "../lib/pricing";
+import Photo from "./Photo";
 
 interface Props {
   stepNo: number;
@@ -14,21 +15,24 @@ export default function StepExperience({ stepNo, selected, onSelect, onNext }: P
       <h3 className="mt-0 mb-4 text-lg font-semibold">{stepNo} · ¿Qué experiencia quieres?</h3>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {(Object.values(SPACES)).map((s) => {
+        {Object.values(SPACES).map((s) => {
           const isSel = selected === s.id;
           return (
             <button
               key={s.id}
               type="button"
               onClick={() => onSelect(s.id)}
-              className={`cursor-pointer rounded-kb border-2 bg-card p-4 text-left transition ${
-                isSel ? "border-accent bg-card2" : "border-line hover:border-accent2"
+              className={`cursor-pointer overflow-hidden rounded-kb border-2 text-left transition ${
+                isSel ? "border-accent2" : "border-line hover:border-accent2"
               }`}
             >
-              <h4 className="m-0 text-base font-semibold">{s.name}</h4>
-              <div className="text-[0.82rem] text-muted">{s.tagline}</div>
-              <div className="mt-2 text-sm font-semibold text-accent">
-                Desde {fmt(s.hourly[2])} / 2h
+              <Photo src={s.image} alt={s.name} className="h-40 w-full" />
+              <div className="p-4">
+                <h4 className="m-0 text-base font-semibold">{s.name}</h4>
+                <div className="text-[0.82rem] text-muted">{s.tagline}</div>
+                <div className="mt-2 inline-block bg-accent px-2 py-0.5 text-sm font-bold text-txt">
+                  Desde {fmt(s.hourly[2])} / 2h
+                </div>
               </div>
             </button>
           );
@@ -52,7 +56,7 @@ export default function StepExperience({ stepNo, selected, onSelect, onNext }: P
         type="button"
         disabled={!selected}
         onClick={onNext}
-        className="mt-3 block w-full rounded-xl bg-accent p-3.5 text-base font-semibold text-[#1a1a1a] disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
+        className="mt-3 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         Continuar
       </button>
