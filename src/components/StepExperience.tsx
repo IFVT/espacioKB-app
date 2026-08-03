@@ -26,7 +26,8 @@ export default function StepExperience({ stepNo, selected, onSelect, onNext }: P
                 isSel ? "border-accent2" : "border-line hover:border-accent2"
               }`}
             >
-              <Photo src={s.image} alt={s.name} className="h-40 w-full" />
+              {/* Sin imagen por ahora: placeholder (decisión temporal). */}
+              <Photo alt={s.name} className="h-40 w-full" />
               <div className="p-4">
                 <h4 className="m-0 text-base font-semibold">{s.name}</h4>
                 <div className="text-[0.82rem] text-muted">{s.tagline}</div>
