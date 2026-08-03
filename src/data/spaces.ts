@@ -25,6 +25,8 @@ export interface Space {
   includesPhone: boolean;
   /** Ruta de la foto de la sala en /public. */
   image: string;
+  /** Foto por cada opción de horas (como en la página oficial). Opcional. */
+  hourImages?: Record<number, string>;
 }
 
 export const SPACES: Record<SpaceId, Space> = {
@@ -36,7 +38,15 @@ export const SPACES: Record<SpaceId, Space> = {
     hourly: { 2: 180000, 3: 270000, 4: 360000, 5: 450000, 6: 540000, 7: 630000 },
     extras: [],
     includesPhone: true,
-    image: "/img/karaoke.jpg",
+    image: "/img/karaoke-2h.jpg",
+    hourImages: {
+      2: "/img/karaoke-2h.jpg",
+      3: "/img/karaoke-3h.jpg",
+      4: "/img/karaoke-4h.jpg",
+      5: "/img/karaoke-5h.jpg",
+      6: "/img/karaoke-6h.jpg",
+      7: "/img/karaoke-7h.jpg",
+    },
   },
   casita: {
     id: "casita",

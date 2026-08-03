@@ -26,22 +26,24 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, on
       <h3 className="mt-0 mb-1 text-lg font-semibold">{stepNo} · Elige la duración</h3>
       <p className="mb-4 text-[0.82rem] text-muted">{s.name} · tarifa por horas</p>
 
-      <Photo src={s.image} alt={s.name} className="mb-4 h-44 w-full rounded-xl" />
-
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {HOURS_OPTIONS.map((h) => {
           const isSel = hours === h;
+          const img = s.hourImages?.[h] ?? s.image;
           return (
             <button
               key={h}
               type="button"
               onClick={() => onChange(h)}
-              className={`cursor-pointer rounded-xl border-2 p-3 text-left transition ${
-                isSel ? "border-accent2 bg-card2" : "border-line hover:border-accent2"
+              className={`cursor-pointer overflow-hidden rounded-xl border-2 text-left transition ${
+                isSel ? "border-accent2" : "border-line hover:border-accent2"
               }`}
             >
-              <div className="text-sm font-semibold">{h} horas</div>
-              <div className="mt-1 text-[0.95rem] font-bold">{fmt(s.hourly[h])}</div>
+              <Photo src={img} alt={`${s.name} ${h} horas`} className="h-28 w-full" />
+              <div className="p-2.5">
+                <div className="text-sm font-semibold">{h} horas</div>
+                <div className="mt-0.5 text-[0.95rem] font-bold">{fmt(s.hourly[h])}</div>
+              </div>
             </button>
           );
         })}
