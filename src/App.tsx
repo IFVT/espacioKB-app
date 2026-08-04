@@ -16,6 +16,13 @@ type StepKey = "experience" | "hours" | "schedule" | "extras" | "customer" | "su
 
 const emptyCustomer: Customer = { name: "", phone: "", email: "" };
 
+// Enlace directo: ?espacio=karaoke | casita abre el paso 2 con esa experiencia.
+function experienceFromUrl(): SpaceId | null {
+  if (typeof window === "undefined") return null;
+  const p = new URLSearchParams(window.location.search).get("espacio");
+  return p === "karaoke" || p === "casita" ? p : null;
+}
+
 // El paso de equipos solo existe para La Casita de Renata.
 function buildSteps(spaceId: SpaceId | null): StepKey[] {
   const withExtras = spaceId === "casita";
@@ -30,8 +37,10 @@ function buildSteps(spaceId: SpaceId | null): StepKey[] {
 }
 
 export default function App() {
-  const [stepKey, setStepKey] = useState<StepKey>("experience");
-  const [spaceId, setSpaceId] = useState<SpaceId | null>(null);
+  const [stepKey, setStepKey] = useState<StepKey>(() =>
+    experienceFromUrl() ? "hours" : "experience",
+  );
+  const [spaceId, setSpaceId] = useState<SpaceId | null>(experienceFromUrl);
   const [hours, setHours] = useState(2);
   const [date, setDate] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<string | null>(null);
