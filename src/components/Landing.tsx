@@ -10,7 +10,7 @@ interface Props {
 // pelado). El flujo normal entra directo por enlace a cada espacio.
 export default function Landing({ onPick }: Props) {
   return (
-    <section className="mb-4 rounded-kb border border-line bg-card p-5">
+    <section className="mb-4 rounded-kb border border-black bg-card p-5">
       <h3 className="mt-0 mb-4 text-lg font-semibold">Elige tu espacio</h3>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -19,7 +19,7 @@ export default function Landing({ onPick }: Props) {
             key={s.id}
             type="button"
             onClick={() => onPick(s.id)}
-            className="cursor-pointer overflow-hidden rounded-kb border-2 border-line text-left transition hover:border-accent2"
+            className="cursor-pointer overflow-hidden rounded-kb border-2 border-black text-left transition hover:border-accent"
           >
             <Photo alt={s.name} className="h-40 w-full" />
             <div className="p-4">

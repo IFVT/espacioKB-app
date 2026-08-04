@@ -16,7 +16,7 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
   const minC = MIN_CONSUMO(hours);
 
   return (
-    <div className="rounded-kb border border-line bg-card p-4">
+    <div className="rounded-kb border border-black bg-card p-4">
       <h4 className="mt-0 mb-3 text-base font-semibold">Tu reserva</h4>
 
       <div className="mb-3 rounded-lg bg-card2 p-3 text-[0.82rem]">
@@ -37,7 +37,7 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between border-t border-line pt-2 font-bold">
+      <div className="mt-2 flex justify-between border-t border-black pt-2 font-bold">
         <span>Total en línea</span>
         <span>{fmt(total)}</span>
       </div>

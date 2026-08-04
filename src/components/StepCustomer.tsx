@@ -18,10 +18,10 @@ export default function StepCustomer({ stepNo, customer, onChange, onBack, onNex
   const set = (patch: Partial<Customer>) => onChange({ ...customer, ...patch });
 
   const inputCls =
-    "w-full rounded-xl border border-line bg-card2 p-3 text-base text-txt outline-none focus:border-accent";
+    "w-full rounded-xl border border-black bg-card2 p-3 text-base text-txt outline-none focus:border-accent";
 
   return (
-    <section className="mb-4 rounded-kb border border-line bg-card p-5">
+    <section className="mb-4 rounded-kb border border-black bg-card p-5">
       <button
         type="button"
         onClick={onBack}

@@ -37,13 +37,13 @@ export default function Calendar({ selected, onSelect }: Props) {
   };
 
   return (
-    <div className="rounded-xl border border-line bg-card2 p-3">
+    <div className="rounded-xl border border-black bg-card2 p-3">
       <div className="mb-2 flex items-center justify-between">
         <button
           type="button"
           onClick={() => move(-1)}
           disabled={viewKey <= minKey}
-          className="grid h-8 w-8 place-items-center rounded-lg border border-line text-muted disabled:opacity-30 enabled:hover:border-accent2"
+          className="grid h-8 w-8 place-items-center rounded-lg border border-black text-muted disabled:opacity-30 enabled:hover:border-accent"
         >
           ‹
         </button>
@@ -52,7 +52,7 @@ export default function Calendar({ selected, onSelect }: Props) {
           type="button"
           onClick={() => move(1)}
           disabled={viewKey >= maxKey}
-          className="grid h-8 w-8 place-items-center rounded-lg border border-line text-muted disabled:opacity-30 enabled:hover:border-accent2"
+          className="grid h-8 w-8 place-items-center rounded-lg border border-black text-muted disabled:opacity-30 enabled:hover:border-accent"
         >
           ›
         </button>
@@ -80,7 +80,7 @@ export default function Calendar({ selected, onSelect }: Props) {
                 isSel
                   ? "bg-accent font-semibold text-[#1a1a1a]"
                   : ok
-                    ? "border border-line text-txt hover:border-accent2"
+                    ? "border border-black text-txt hover:border-accent"
                     : "cursor-not-allowed text-muted/30"
               }`}
             >

@@ -29,7 +29,7 @@ export default function StepExtras({
   const blocked = anySelected && !acceptEquip;
 
   return (
-    <section className="mb-4 rounded-kb border border-line bg-card p-5">
+    <section className="mb-4 rounded-kb border border-black bg-card p-5">
       <button
         type="button"
         onClick={onBack}
@@ -55,7 +55,7 @@ export default function StepExtras({
               <label
                 key={ex.id}
                 className={`mt-2 flex cursor-pointer items-center justify-between gap-2.5 rounded-xl border bg-card2 p-3.5 ${
-                  on ? "border-accent2" : "border-line hover:border-accent2"
+                  on ? "border-accent" : "border-black hover:border-accent"
                 }`}
               >
                 <input
@@ -80,7 +80,7 @@ export default function StepExtras({
           })}
 
           {anySelected && (
-            <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-xl border border-line bg-card2 p-3.5 text-[0.82rem] text-muted">
+            <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-xl border border-black bg-card2 p-3.5 text-[0.82rem] text-muted">
               <input
                 type="checkbox"
                 checked={acceptEquip}

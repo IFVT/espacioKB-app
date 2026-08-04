@@ -28,7 +28,7 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onNext }: 
   ];
 
   return (
-    <section className="mb-4 rounded-kb border border-line bg-card p-5">
+    <section className="mb-4 rounded-kb border border-black bg-card p-5">
       <h3 className="mt-0 mb-1 text-lg font-semibold">{stepNo} · Elige la duración</h3>
       <p className="mb-4 text-[0.82rem] text-muted">{s.name} · tarifa por horas</p>
 
@@ -65,7 +65,7 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onNext }: 
               type="button"
               onClick={() => onChange(h)}
               className={`cursor-pointer overflow-hidden rounded-xl border-2 text-left transition ${
-                isSel ? "border-accent2" : "border-line hover:border-accent2"
+                isSel ? "border-accent" : "border-black hover:border-accent"
               }`}
             >
               {hasHourImages && (

@@ -31,7 +31,7 @@ export default function StepSummary({
   const s = SPACES[spaceId];
 
   return (
-    <section className="mb-4 rounded-kb border border-line bg-card p-5">
+    <section className="mb-4 rounded-kb border border-black bg-card p-5">
       <button
         type="button"
         onClick={onBack}
@@ -52,7 +52,7 @@ export default function StepSummary({
             <span>{fmt(l.amount)}</span>
           </div>
         ))}
-        <div className="mt-2 flex justify-between border-t border-line pt-3 text-[1.15rem] font-bold">
+        <div className="mt-2 flex justify-between border-t border-black pt-3 text-[1.15rem] font-bold">
           <span>Total a pagar en línea</span>
           <span>{fmt(total)}</span>
         </div>

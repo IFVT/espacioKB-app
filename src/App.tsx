@@ -126,7 +126,7 @@ export default function App() {
       </p>
 
       {done ? (
-        <section className="mx-auto max-w-[560px] rounded-kb border border-line bg-card p-5 text-center">
+        <section className="mx-auto max-w-[560px] rounded-kb border border-black bg-card p-5 text-center">
           <div className="mx-auto mb-3.5 grid h-16 w-16 place-items-center rounded-full bg-ok text-3xl text-bg">
             ✓
           </div>
@@ -138,7 +138,7 @@ export default function App() {
           <button
             type="button"
             onClick={reset}
-            className="w-full rounded-xl border border-line bg-transparent p-3.5 text-base text-muted"
+            className="w-full rounded-xl border border-black bg-transparent p-3.5 text-base text-muted"
           >
             Hacer otra reserva
           </button>

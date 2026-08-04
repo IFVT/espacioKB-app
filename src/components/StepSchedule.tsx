@@ -49,7 +49,7 @@ export default function StepSchedule({
   }, [spaceId, date, hours]);
 
   return (
-    <section className="mb-4 rounded-kb border border-line bg-card p-5">
+    <section className="mb-4 rounded-kb border border-black bg-card p-5">
       <button
         type="button"
         onClick={onBack}
@@ -84,7 +84,7 @@ export default function StepSchedule({
                   className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition ${
                     startTime === t
                       ? "border-accent bg-card2 text-txt"
-                      : "border-line bg-card2 text-muted hover:border-accent2"
+                      : "border-black bg-card2 text-muted hover:border-accent"
                   }`}
                 >
                   {t}
