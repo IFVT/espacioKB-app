@@ -1,4 +1,4 @@
-import { SPACES, HOURS_OPTIONS, type SpaceId } from "../data/spaces";
+import { SPACES, HOURS_OPTIONS, POLICIES, type SpaceId } from "../data/spaces";
 import { fmt } from "../lib/pricing";
 import Photo from "./Photo";
 
@@ -7,14 +7,13 @@ interface Props {
   spaceId: SpaceId;
   hours: number;
   onChange: (hours: number) => void;
-  onBack: () => void;
   onNext: () => void;
 }
 
 // Precio por hora de la sala (= "conecta tu celular" en la página oficial).
 const CASITA_HORA = 110000;
 
-export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, onNext }: Props) {
+export default function StepHours({ stepNo, spaceId, hours, onChange, onNext }: Props) {
   const s = SPACES[spaceId];
   const hasHourImages = !!s.hourImages;
 
@@ -30,13 +29,6 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, on
 
   return (
     <section className="mb-4 rounded-kb border border-line bg-card p-5">
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-2.5 cursor-pointer border-none bg-transparent p-0 text-[0.85rem] text-muted"
-      >
-        ← Cambiar experiencia
-      </button>
       <h3 className="mt-0 mb-1 text-lg font-semibold">{stepNo} · Elige la duración</h3>
       <p className="mb-4 text-[0.82rem] text-muted">{s.name} · tarifa por horas</p>
 
@@ -94,6 +86,17 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, on
 
       <div className="mt-4 rounded-xl bg-card2 p-3.5 text-[0.82rem] text-muted">
         Tarifa del espacio por {hours} horas. El consumo mínimo se paga aparte en el lugar.
+      </div>
+
+      <div className="mt-2 rounded-xl bg-card2 p-3.5 text-[0.82rem] text-muted">
+        <p className="mb-1 font-semibold text-txt">
+          Capacidad: hasta {s.capacity} personas
+        </p>
+        <ul className="m-0 list-disc space-y-0.5 pl-4">
+          {POLICIES.map((p, i) => (
+            <li key={i}>{p}</li>
+          ))}
+        </ul>
       </div>
 
       <button

@@ -5,18 +5,19 @@ import { calcTotal, fmt } from "./lib/pricing";
 import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
 import Stepper from "./components/Stepper";
-import StepExperience from "./components/StepExperience";
+import Landing from "./components/Landing";
 import StepHours from "./components/StepHours";
 import StepSchedule from "./components/StepSchedule";
 import StepExtras from "./components/StepExtras";
 import StepCustomer from "./components/StepCustomer";
 import StepSummary from "./components/StepSummary";
 
-type StepKey = "experience" | "hours" | "schedule" | "extras" | "customer" | "summary";
+type StepKey = "hours" | "schedule" | "extras" | "customer" | "summary";
 
 const emptyCustomer: Customer = { name: "", phone: "", email: "" };
 
-// Enlace directo: ?espacio=karaoke | casita abre el paso 2 con esa experiencia.
+// Enlace directo: ?espacio=karaoke | casita abre el flujo de ese espacio.
+// Sin parámetro válido → se muestra el Landing de respaldo (elegir espacio).
 function experienceFromUrl(): SpaceId | null {
   if (typeof window === "undefined") return null;
   const p = new URLSearchParams(window.location.search).get("espacio");
@@ -26,20 +27,11 @@ function experienceFromUrl(): SpaceId | null {
 // El paso de equipos solo existe para La Casita de Renata.
 function buildSteps(spaceId: SpaceId | null): StepKey[] {
   const withExtras = spaceId === "casita";
-  return [
-    "experience",
-    "hours",
-    "schedule",
-    ...(withExtras ? (["extras"] as StepKey[]) : []),
-    "customer",
-    "summary",
-  ];
+  return ["hours", "schedule", ...(withExtras ? (["extras"] as StepKey[]) : []), "customer", "summary"];
 }
 
 export default function App() {
-  const [stepKey, setStepKey] = useState<StepKey>(() =>
-    experienceFromUrl() ? "hours" : "experience",
-  );
+  const [stepKey, setStepKey] = useState<StepKey>("hours");
   const [spaceId, setSpaceId] = useState<SpaceId | null>(experienceFromUrl);
   const [hours, setHours] = useState(2);
   const [date, setDate] = useState<string | null>(null);
@@ -65,13 +57,11 @@ export default function App() {
     scrollTop();
   };
 
-  const chooseSpace = (id: SpaceId) => {
-    if (id !== spaceId) {
-      // los equipos son de La Casita; cambiar de espacio los invalida
-      setExtras([]);
-      setAcceptEquip(false);
-    }
+  // Entrar a un espacio desde el Landing.
+  const enterSpace = (id: SpaceId) => {
     setSpaceId(id);
+    setStepKey("hours");
+    scrollTop();
   };
 
   const toggleExtra = (id: string) =>
@@ -114,8 +104,9 @@ export default function App() {
   };
 
   const reset = () => {
-    setStepKey("experience");
-    setSpaceId(null);
+    // Vuelve al mismo espacio si vino por enlace directo; al Landing si no.
+    setSpaceId(experienceFromUrl());
+    setStepKey("hours");
     setHours(2);
     setDate(null);
     setStartTime(null);
@@ -130,8 +121,7 @@ export default function App() {
     <div className="mx-auto max-w-[720px] p-4">
       <h1 className="my-1 text-2xl font-bold">Reserva tu espacio · Espacio KB</h1>
       <p className="mb-5 text-[0.9rem] text-muted">
-        Elige tu experiencia, las horas y los extras. Paga en línea y tu reserva queda
-        confirmada.
+        Elige las horas y los extras. Paga en línea y tu reserva queda confirmada.
       </p>
 
       {done ? (
@@ -152,31 +142,23 @@ export default function App() {
             Hacer otra reserva
           </button>
         </section>
+      ) : spaceId === null ? (
+        <Landing onPick={enterSpace} />
       ) : (
         <>
           <Stepper current={stepNo} total={steps.length} />
 
-          {stepKey === "experience" && (
-            <StepExperience
-              stepNo={stepNo}
-              selected={spaceId}
-              onSelect={chooseSpace}
-              onNext={goNext}
-            />
-          )}
-
-          {stepKey === "hours" && spaceId && (
+          {stepKey === "hours" && (
             <StepHours
               stepNo={stepNo}
               spaceId={spaceId}
               hours={hours}
               onChange={setHours}
-              onBack={goBack}
               onNext={goNext}
             />
           )}
 
-          {stepKey === "schedule" && spaceId && (
+          {stepKey === "schedule" && (
             <StepSchedule
               stepNo={stepNo}
               spaceId={spaceId}
@@ -190,7 +172,7 @@ export default function App() {
             />
           )}
 
-          {stepKey === "extras" && spaceId && (
+          {stepKey === "extras" && (
             <StepExtras
               stepNo={stepNo}
               spaceId={spaceId}
@@ -213,7 +195,7 @@ export default function App() {
             />
           )}
 
-          {stepKey === "summary" && spaceId && (
+          {stepKey === "summary" && (
             <StepSummary
               stepNo={stepNo}
               spaceId={spaceId}
