@@ -18,6 +18,16 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, on
   const s = SPACES[spaceId];
   const hasHourImages = !!s.hourImages;
 
+  // La Casita: banners de la sala + equipos, como la página oficial.
+  const casitaItems = [
+    {
+      name: "Conecta tu celular al sistema de audio",
+      price: `${fmt(CASITA_HORA)} / hora`,
+      image: "/img/casita-celular.jpg",
+    },
+    ...s.extras.map((ex) => ({ name: ex.name, price: fmt(ex.price), image: ex.image })),
+  ];
+
   return (
     <section className="mb-4 rounded-kb border border-line bg-card p-5">
       <button
@@ -30,25 +40,20 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onBack, on
       <h3 className="mt-0 mb-1 text-lg font-semibold">{stepNo} · Elige la duración</h3>
       <p className="mb-4 text-[0.82rem] text-muted">{s.name} · tarifa por horas</p>
 
-      {/* La Casita: lista de la sala + equipos, como la página oficial. */}
       {s.extras.length > 0 && (
         <>
-          <div className="mb-2 overflow-hidden rounded-xl border border-line">
-            <div className="flex items-start justify-between gap-3 border-b border-line p-3.5">
-              <span className="text-sm">Conecta tu celular al sistema de audio</span>
-              <span className="whitespace-nowrap text-sm font-bold">
-                {fmt(CASITA_HORA)} <span className="font-normal text-muted">/ hora</span>
-              </span>
-            </div>
-            {s.extras.map((ex, i) => (
-              <div
-                key={ex.id}
-                className={`flex items-start justify-between gap-3 p-3.5 ${
-                  i < s.extras.length - 1 ? "border-b border-line" : ""
-                }`}
-              >
-                <span className="text-sm">{ex.name}</span>
-                <span className="whitespace-nowrap text-sm font-bold">{fmt(ex.price)}</span>
+          <div className="mb-2 space-y-2.5">
+            {casitaItems.map((it, i) => (
+              <div key={i} className="relative h-28 overflow-hidden rounded-xl bg-black">
+                <Photo src={it.image} alt={it.name} className="absolute inset-0 h-full w-full" />
+                <div className="relative flex h-full flex-col items-center justify-center gap-1.5 p-3 text-center">
+                  <span className="box-decoration-clone bg-black px-2 py-0.5 text-[0.95rem] font-bold leading-relaxed text-white">
+                    {it.name}
+                  </span>
+                  <span className="box-decoration-clone bg-black px-2 py-0.5 text-sm font-bold text-white">
+                    {it.price}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

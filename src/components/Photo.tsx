@@ -24,8 +24,8 @@ export default function Photo({ src, alt, className = "" }: Props) {
     }
     const t = setTimeout(() => {
       const img = ref.current;
-      if (img && img.naturalWidth === 0) setFailed(true);
-    }, 2000);
+      if (img && !img.complete && img.naturalWidth === 0) setFailed(true);
+    }, 6000);
     return () => clearTimeout(t);
   }, [src]);
 
