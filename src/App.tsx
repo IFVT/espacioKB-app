@@ -6,6 +6,7 @@ import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
 import Stepper from "./components/Stepper";
 import Landing from "./components/Landing";
+import SummaryAside from "./components/SummaryAside";
 import StepHours from "./components/StepHours";
 import StepSchedule from "./components/StepSchedule";
 import StepExtras from "./components/StepExtras";
@@ -118,14 +119,14 @@ export default function App() {
   };
 
   return (
-    <div className="mx-auto max-w-[720px] p-4">
+    <div className="mx-auto max-w-[1100px] p-4">
       <h1 className="my-1 text-2xl font-bold">Reserva tu espacio · Espacio KB</h1>
       <p className="mb-5 text-[0.9rem] text-muted">
         Elige las horas y los extras. Paga en línea y tu reserva queda confirmada.
       </p>
 
       {done ? (
-        <section className="rounded-kb border border-line bg-card p-5 text-center">
+        <section className="mx-auto max-w-[560px] rounded-kb border border-line bg-card p-5 text-center">
           <div className="mx-auto mb-3.5 grid h-16 w-16 place-items-center rounded-full bg-ok text-3xl text-bg">
             ✓
           </div>
@@ -143,12 +144,15 @@ export default function App() {
           </button>
         </section>
       ) : spaceId === null ? (
-        <Landing onPick={enterSpace} />
+        <div className="mx-auto max-w-[720px]">
+          <Landing onPick={enterSpace} />
+        </div>
       ) : (
-        <>
-          <Stepper current={stepNo} total={steps.length} />
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-6">
+          <main className="min-w-0">
+            <Stepper current={stepNo} total={steps.length} />
 
-          {stepKey === "hours" && (
+            {stepKey === "hours" && (
             <StepHours
               stepNo={stepNo}
               spaceId={spaceId}
@@ -209,7 +213,20 @@ export default function App() {
               onPay={handlePay}
             />
           )}
-        </>
+          </main>
+
+          {stepKey !== "summary" && (
+            <aside className="hidden lg:sticky lg:top-4 lg:block">
+              <SummaryAside
+                spaceId={spaceId}
+                hours={hours}
+                date={date}
+                startTime={startTime}
+                extras={extras}
+              />
+            </aside>
+          )}
+        </div>
       )}
     </div>
   );
