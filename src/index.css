@@ -54,9 +54,3 @@ body {
   border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
   animation: kb-blob 18s ease-in-out infinite;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .kb-blob {
-    animation: none;
-  }
-}

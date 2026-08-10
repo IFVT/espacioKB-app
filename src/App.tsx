@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { gsap } from "gsap";
 import type { SpaceId } from "./data/spaces";
 import { SPACES } from "./data/spaces";
 import { calcTotal, fmt } from "./lib/pricing";
@@ -49,6 +50,37 @@ export default function App() {
   const steps = useMemo(() => buildSteps(spaceId), [spaceId]);
   const currentIndex = Math.max(0, steps.indexOf(stepKey));
   const stepNo = currentIndex + 1;
+
+  // Fade-in de toda la app al cargar.
+  const contentRef = useRef<HTMLDivElement>(null);
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (contentRef.current) {
+      gsap.to(contentRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+        startAt: { y: 16 },
+      });
+    }
+  }, []);
+
+  // Fade-in de cada paso al avanzar (salvo la primera carga, ya cubierta arriba).
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    const sec = contentRef.current?.querySelector("section");
+    if (sec) {
+      gsap.fromTo(
+        sec,
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+      );
+    }
+  }, [stepKey, spaceId, done]);
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const goNext = () => {
@@ -123,7 +155,11 @@ export default function App() {
   return (
     <>
       <Background />
-      <div className="relative z-10 mx-auto max-w-[1100px] p-4">
+      <div
+        ref={contentRef}
+        style={{ opacity: 0 }}
+        className="relative z-10 mx-auto max-w-[1100px] p-4"
+      >
       <h1 className="my-1 text-2xl font-bold">Reserva tu espacio · Espacio KB</h1>
       <p className="mb-5 text-[0.9rem] text-muted">
         Elige las horas y los extras. Paga en línea y tu reserva queda confirmada.

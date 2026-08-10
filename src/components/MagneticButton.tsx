@@ -12,13 +12,10 @@ export default function MagneticButton({
   const ref = useRef<HTMLButtonElement>(null);
   const xTo = useRef<((v: number) => void) | null>(null);
   const yTo = useRef<((v: number) => void) | null>(null);
-  const enabled = useRef(true);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    enabled.current = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!enabled.current) return;
     xTo.current = gsap.quickTo(el, "x", { duration: 0.18, ease: "power2.out" });
     yTo.current = gsap.quickTo(el, "y", { duration: 0.18, ease: "power2.out" });
     return () => {
@@ -27,7 +24,6 @@ export default function MagneticButton({
   }, []);
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!enabled.current) return;
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();

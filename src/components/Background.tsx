@@ -15,9 +15,8 @@ export default function Background() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const el = ref.current;
-    if (!el || reduce) return;
+    if (!el) return;
 
     const wraps = gsap.utils.toArray<HTMLElement>(".kb-blob-wrap").map((w) => ({
       x: gsap.quickTo(w, "x", { duration: 0.8, ease: "power2.out" }),
