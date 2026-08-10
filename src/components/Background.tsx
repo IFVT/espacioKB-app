@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
-// Manchas amarillas difuminadas que morphean solas (CSS) y se desplazan con el
-// mouse y el scroll (GSAP, parallax por profundidad). Capa de fondo fija.
+// Manchas amarillas que morphean (CSS), se desplazan solas con un rango grande
+// (GSAP, visible) y además siguen el mouse y el scroll. Capa de fondo fija.
 const BLOBS = [
-  { size: 560, top: "-12%", left: "-10%", opacity: 0.55, depth: 1.6 },
-  { size: 440, top: "16%", left: "70%", opacity: 0.45, depth: 1.1 },
-  { size: 360, top: "60%", left: "4%", opacity: 0.4, depth: 0.8 },
-  { size: 500, top: "76%", left: "64%", opacity: 0.38, depth: 1.3 },
-  { size: 320, top: "38%", left: "42%", opacity: 0.3, depth: 0.5 },
+  { size: 520, top: "-8%", left: "-6%", opacity: 0.6, depth: 1.6 },
+  { size: 420, top: "12%", left: "68%", opacity: 0.5, depth: 1.1 },
+  { size: 360, top: "58%", left: "2%", opacity: 0.5, depth: 0.8 },
+  { size: 460, top: "70%", left: "62%", opacity: 0.45, depth: 1.3 },
+  { size: 320, top: "34%", left: "40%", opacity: 0.4, depth: 0.5 },
 ];
 
 export default function Background() {
@@ -18,6 +18,23 @@ export default function Background() {
     const el = ref.current;
     if (!el) return;
 
+    // Desplazamiento propio, con rango grande para que se note.
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray<HTMLElement>(".kb-blob").forEach((blob, i) => {
+        gsap.to(blob, {
+          x: "random(-180, 180)",
+          y: "random(-140, 140)",
+          scale: "random(0.8, 1.25)",
+          duration: "random(9, 14)",
+          delay: i * 0.4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+      });
+    }, el);
+
+    // Parallax con mouse + scroll (sobre el wrapper, no choca con lo de arriba).
     const wraps = gsap.utils.toArray<HTMLElement>(".kb-blob-wrap").map((w) => ({
       x: gsap.quickTo(w, "x", { duration: 0.8, ease: "power2.out" }),
       y: gsap.quickTo(w, "y", { duration: 0.8, ease: "power2.out" }),
@@ -29,8 +46,8 @@ export default function Background() {
     const apply = () => {
       const sy = window.scrollY;
       wraps.forEach((w) => {
-        w.x(mx * w.depth * 60);
-        w.y(my * w.depth * 60 + sy * w.depth * 0.15);
+        w.x(mx * w.depth * 70);
+        w.y(my * w.depth * 70 + sy * w.depth * 0.18);
       });
     };
     const onMove = (e: MouseEvent) => {
@@ -45,6 +62,7 @@ export default function Background() {
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("scroll", onScroll);
+      ctx.revert();
     };
   }, []);
 
@@ -68,9 +86,9 @@ export default function Background() {
               height: b.size,
               opacity: b.opacity,
               backgroundColor: "var(--color-accent)",
-              filter: "blur(60px)",
-              animationDelay: `${i * -3.5}s`,
-              animationDuration: `${16 + i * 2}s`,
+              filter: "blur(45px)",
+              animationDelay: `${i * -2.5}s`,
+              animationDuration: `${10 + i * 1.5}s`,
               willChange: "border-radius, transform",
             }}
           />
