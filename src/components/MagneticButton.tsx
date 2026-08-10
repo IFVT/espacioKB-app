@@ -19,8 +19,8 @@ export default function MagneticButton({
     if (!el) return;
     enabled.current = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!enabled.current) return;
-    xTo.current = gsap.quickTo(el, "x", { duration: 0.4, ease: "power3.out" });
-    yTo.current = gsap.quickTo(el, "y", { duration: 0.4, ease: "power3.out" });
+    xTo.current = gsap.quickTo(el, "x", { duration: 0.18, ease: "power2.out" });
+    yTo.current = gsap.quickTo(el, "y", { duration: 0.18, ease: "power2.out" });
     return () => {
       gsap.killTweensOf(el);
     };
@@ -33,8 +33,8 @@ export default function MagneticButton({
     const r = el.getBoundingClientRect();
     const relX = e.clientX - (r.left + r.width / 2);
     const relY = e.clientY - (r.top + r.height / 2);
-    xTo.current?.(clamp(relX * 0.2, 14));
-    yTo.current?.(clamp(relY * 0.5, 10));
+    xTo.current?.(clamp(relX * 0.12, 6));
+    yTo.current?.(clamp(relY * 0.3, 5));
   };
 
   const onLeave = () => {
