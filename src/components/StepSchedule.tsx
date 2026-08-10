@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { SpaceId } from "../data/spaces";
 import { getAvailability } from "../lib/api";
 import Calendar from "./Calendar";
+import MagneticButton from "./MagneticButton";
 
 interface Props {
   stepNo: number;
@@ -95,14 +96,14 @@ export default function StepSchedule({
         </div>
       )}
 
-      <button
+      <MagneticButton
         type="button"
         disabled={!date || !startTime}
         onClick={onNext}
         className="mt-4 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         Continuar
-      </button>
+      </MagneticButton>
     </section>
   );
 }

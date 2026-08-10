@@ -1,6 +1,7 @@
 import { SPACES, HOURS_OPTIONS, POLICIES, type SpaceId } from "../data/spaces";
 import { fmt } from "../lib/pricing";
 import Photo from "./Photo";
+import MagneticButton from "./MagneticButton";
 
 interface Props {
   stepNo: number;
@@ -99,13 +100,13 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onNext }: 
         </ul>
       </div>
 
-      <button
+      <MagneticButton
         type="button"
         onClick={onNext}
         className="mt-3 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800"
       >
         Continuar
-      </button>
+      </MagneticButton>
     </section>
   );
 }

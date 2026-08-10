@@ -1,6 +1,7 @@
 import { SPACES, type SpaceId } from "../data/spaces";
 import { fmt } from "../lib/pricing";
 import Photo from "./Photo";
+import MagneticButton from "./MagneticButton";
 
 interface Props {
   stepNo: number;
@@ -96,14 +97,14 @@ export default function StepExtras({
         </>
       )}
 
-      <button
+      <MagneticButton
         type="button"
         disabled={blocked}
         onClick={onNext}
         className="mt-4 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         Continuar
-      </button>
+      </MagneticButton>
     </section>
   );
 }

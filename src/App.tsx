@@ -5,6 +5,7 @@ import { calcTotal, fmt } from "./lib/pricing";
 import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
 import Background from "./components/Background";
+import MagneticButton from "./components/MagneticButton";
 import Stepper from "./components/Stepper";
 import Landing from "./components/Landing";
 import SummaryAside from "./components/SummaryAside";
@@ -138,13 +139,13 @@ export default function App() {
             {spaceId && SPACES[spaceId].name} · {date} · {startTime} · {hours}h ·{" "}
             {fmt(done.total)}. (Demostración)
           </p>
-          <button
+          <MagneticButton
             type="button"
             onClick={reset}
             className="w-full rounded-xl border border-black bg-transparent p-3.5 text-base text-muted"
           >
             Hacer otra reserva
-          </button>
+          </MagneticButton>
         </section>
       ) : spaceId === null ? (
         <div className="mx-auto max-w-[720px]">

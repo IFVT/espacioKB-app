@@ -1,5 +1,6 @@
 import { SPACES, MIN_CONSUMO, type SpaceId } from "../data/spaces";
 import { calcTotal, fmt } from "../lib/pricing";
+import MagneticButton from "./MagneticButton";
 
 interface Props {
   stepNo: number;
@@ -69,14 +70,14 @@ export default function StepSummary({
         </div>
       )}
 
-      <button
+      <MagneticButton
         type="button"
         disabled={paying}
         onClick={onPay}
         className="mt-4 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         {paying ? "Redirigiendo al pago…" : `Pagar ${fmt(total)}`}
-      </button>
+      </MagneticButton>
 
       <p className="mt-3 text-center text-[0.8rem] text-muted">
         Pago seguro con Mercado Pago. En el siguiente paso eliges{" "}

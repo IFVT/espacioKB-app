@@ -1,4 +1,5 @@
 import type { Customer } from "../lib/types";
+import MagneticButton from "./MagneticButton";
 
 interface Props {
   stepNo: number;
@@ -63,14 +64,14 @@ export default function StepCustomer({ stepNo, customer, onChange, onBack, onNex
         </div>
       </div>
 
-      <button
+      <MagneticButton
         type="button"
         disabled={!valid}
         onClick={onNext}
         className="mt-4 block w-full rounded-xl bg-black p-3.5 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
       >
         Ver total y pagar
-      </button>
+      </MagneticButton>
     </section>
   );
 }
