@@ -4,6 +4,7 @@ import { SPACES } from "./data/spaces";
 import { calcTotal, fmt } from "./lib/pricing";
 import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
+import Background from "./components/Background";
 import Stepper from "./components/Stepper";
 import Landing from "./components/Landing";
 import SummaryAside from "./components/SummaryAside";
@@ -119,7 +120,9 @@ export default function App() {
   };
 
   return (
-    <div className="mx-auto max-w-[1100px] p-4">
+    <>
+      <Background />
+      <div className="relative z-10 mx-auto max-w-[1100px] p-4">
       <h1 className="my-1 text-2xl font-bold">Reserva tu espacio · Espacio KB</h1>
       <p className="mb-5 text-[0.9rem] text-muted">
         Elige las horas y los extras. Paga en línea y tu reserva queda confirmada.
@@ -228,6 +231,7 @@ export default function App() {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
