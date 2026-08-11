@@ -3,6 +3,7 @@ import { SPACES } from "../src/data/spaces";
 import { getSupabase } from "./_lib/supabase";
 import { BadRequest, validateBooking, validateCustomer } from "./_lib/booking";
 import { mpFetch } from "./_lib/mp";
+import { logPaymentEvent } from "./_lib/audit";
 
 // PSE manda al cliente al portal de su banco (login, clave, a veces token), así
 // que 15 min se quedaban cortos. 30 da margen sin bloquear el cupo de más.
@@ -68,6 +69,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: "No se pudo crear la reserva" });
   }
 
+  await logPaymentEvent(supabase, {
+    reservationId: reservation.id,
+    event: "hold_created",
+    amount: booking.amount,
+    detail: {
+      space: booking.space,
+      date: booking.date,
+      start: booking.start_time,
+      hours: booking.hours,
+      extras: booking.extras,
+    },
+  });
+
   // 2) Preferencia de Mercado Pago (Checkout Pro).
   try {
     const baseUrl = process.env.PUBLIC_BASE_URL;
@@ -123,18 +137,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .update({ payment_provider: "mercadopago", payment_id: pref.id })
       .eq("id", reservation.id);
 
+    await logPaymentEvent(supabase, {
+      reservationId: reservation.id,
+      paymentId: pref.id,
+      event: "preference_created",
+      amount: booking.amount,
+    });
+
     return res.status(200).json({
       reservationId: reservation.id,
       checkoutUrl: pref.init_point,
       amount: booking.amount,
     });
   } catch (err) {
-    // Si falla la pasarela, liberamos el cupo en vez de dejarlo bloqueado 15 min.
+    // Si falla la pasarela, liberamos el cupo en vez de dejarlo bloqueado.
     console.error("create-payment:", err);
     await supabase
       .from("reservations")
       .update({ status: "cancelled" })
-      .eq("id", reservation.id);
+      .eq("id", reservation.id)
+      .neq("status", "confirmed");
+    await logPaymentEvent(supabase, {
+      reservationId: reservation.id,
+      event: "gateway_error",
+      detail: { message: String(err) },
+    });
     return res.status(502).json({ error: "No se pudo iniciar el pago" });
   }
 }

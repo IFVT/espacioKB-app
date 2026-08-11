@@ -29,6 +29,18 @@ async function readError(res: Response): Promise<string> {
   }
 }
 
+/** Estado de una reserva (para la página de retorno tras pagar). */
+export async function getReservationStatus(id: string): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/reservation-status?id=${encodeURIComponent(id)}`);
+    if (!res.ok) return null;
+    const body = (await res.json()) as { status?: string };
+    return body.status ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getAvailability(
   space: SpaceId,
   date: string,

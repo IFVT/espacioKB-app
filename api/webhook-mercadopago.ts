@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getSupabase } from "./_lib/supabase";
 import { mpFetch, verifyWebhookSignature } from "./_lib/mp";
+import { logPaymentEvent } from "./_lib/audit";
 
 /**
  * POST /api/webhook-mercadopago
@@ -68,12 +69,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // 3) Moneda + monto deben coincidir exactamente con lo calculado.
       if (payment.currency_id !== "COP") {
         console.error(`Moneda inesperada en ${reservationId}: ${payment.currency_id}`);
+        await logPaymentEvent(supabase, {
+          reservationId,
+          paymentId,
+          event: "currency_mismatch",
+          status: payment.status,
+          detail: { currency_id: payment.currency_id },
+        });
         return res.status(200).json({ ignored: true });
       }
       if (Math.round(Number(payment.transaction_amount)) !== Number(current.amount)) {
         console.error(
           `Monto no coincide en ${reservationId}: pagado ${payment.transaction_amount}, esperado ${current.amount}`,
         );
+        await logPaymentEvent(supabase, {
+          reservationId,
+          paymentId,
+          event: "amount_mismatch",
+          status: payment.status,
+          amount: Math.round(Number(payment.transaction_amount)),
+          detail: { expected: current.amount },
+        });
         return res.status(200).json({ ignored: true });
       }
 
@@ -104,12 +120,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .update({ status: "cancelled" })
           .eq("id", reservationId)
           .neq("status", "confirmed");
+        await logPaymentEvent(supabase, {
+          reservationId,
+          paymentId,
+          event: "needs_refund",
+          status: payment.status,
+          amount: current.amount,
+          detail: { reason: confirmError.message },
+        });
         return res.status(200).json({ ok: false, needsRefund: true });
       }
 
       if (confirmed && confirmed.length > 0) {
         // TODO(exactamente una vez): Google Calendar + Sheets + correos.
         console.log(`Reserva confirmada: ${reservationId} (pago ${paymentId})`);
+        await logPaymentEvent(supabase, {
+          reservationId,
+          paymentId,
+          event: "confirmed",
+          status: payment.status,
+          amount: current.amount,
+        });
       }
       return res.status(200).json({ ok: true });
     }
@@ -121,6 +152,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .update({ hold_expires_at: new Date(Date.now() + 30 * 60000).toISOString() })
         .eq("id", reservationId)
         .eq("status", "hold");
+      await logPaymentEvent(supabase, {
+        reservationId,
+        paymentId,
+        event: "pending",
+        status: payment.status,
+      });
       return res.status(200).json({ ok: true, pending: true });
     }
 
@@ -131,6 +168,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .update({ status: "cancelled" })
         .eq("id", reservationId)
         .eq("status", "hold");
+      await logPaymentEvent(supabase, {
+        reservationId,
+        paymentId,
+        event: "rejected",
+        status: payment.status,
+      });
     }
 
     return res.status(200).json({ ok: true });

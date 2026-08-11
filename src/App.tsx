@@ -7,6 +7,7 @@ import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
 import Background from "./components/Background";
 import MagneticButton from "./components/MagneticButton";
+import PaymentReturn from "./components/PaymentReturn";
 import Stepper from "./components/Stepper";
 import Landing from "./components/Landing";
 import SummaryAside from "./components/SummaryAside";
@@ -33,6 +34,15 @@ function defaultHoursFor(id: SpaceId | null): number {
   return id === "karaoke" ? 3 : 2;
 }
 
+// Retorno desde Mercado Pago: back_urls llegan como /?pago=ok&external_reference=<id>
+function paymentReturnFromUrl(): { pago: string; reservationId: string | null } | null {
+  if (typeof window === "undefined") return null;
+  const p = new URLSearchParams(window.location.search);
+  const pago = p.get("pago");
+  if (!pago) return null;
+  return { pago, reservationId: p.get("external_reference") };
+}
+
 // El paso de equipos solo existe para La Casita de Renata.
 function buildSteps(spaceId: SpaceId | null): StepKey[] {
   const withExtras = spaceId === "casita";
@@ -55,6 +65,7 @@ export default function App() {
   const steps = useMemo(() => buildSteps(spaceId), [spaceId]);
   const currentIndex = Math.max(0, steps.indexOf(stepKey));
   const stepNo = currentIndex + 1;
+  const paymentReturn = useMemo(() => paymentReturnFromUrl(), []);
 
   // Fade-in de toda la app al cargar.
   const contentRef = useRef<HTMLDivElement>(null);
@@ -171,7 +182,12 @@ export default function App() {
         Elige las horas y los extras. Paga en línea y tu reserva queda confirmada.
       </p>
 
-      {done ? (
+      {paymentReturn ? (
+        <PaymentReturn
+          pago={paymentReturn.pago}
+          reservationId={paymentReturn.reservationId}
+        />
+      ) : done ? (
         <section className="mx-auto max-w-[560px] rounded-kb border border-black bg-card p-5 text-center">
           <div className="mx-auto mb-3.5 grid h-16 w-16 place-items-center rounded-full bg-ok text-3xl text-bg">
             ✓
