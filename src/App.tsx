@@ -28,6 +28,11 @@ function experienceFromUrl(): SpaceId | null {
   return p === "karaoke" || p === "casita" ? p : null;
 }
 
+// Duración por defecto: Karaoke arranca en 3h; el resto en 2h.
+function defaultHoursFor(id: SpaceId | null): number {
+  return id === "karaoke" ? 3 : 2;
+}
+
 // El paso de equipos solo existe para La Casita de Renata.
 function buildSteps(spaceId: SpaceId | null): StepKey[] {
   const withExtras = spaceId === "casita";
@@ -37,7 +42,7 @@ function buildSteps(spaceId: SpaceId | null): StepKey[] {
 export default function App() {
   const [stepKey, setStepKey] = useState<StepKey>("hours");
   const [spaceId, setSpaceId] = useState<SpaceId | null>(experienceFromUrl);
-  const [hours, setHours] = useState(2);
+  const [hours, setHours] = useState(() => defaultHoursFor(experienceFromUrl()));
   const [date, setDate] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<string | null>(null);
   const [extras, setExtras] = useState<string[]>([]);
@@ -95,6 +100,7 @@ export default function App() {
   // Entrar a un espacio desde el Landing.
   const enterSpace = (id: SpaceId) => {
     setSpaceId(id);
+    setHours(defaultHoursFor(id));
     setStepKey("hours");
     scrollTop();
   };
@@ -142,7 +148,7 @@ export default function App() {
     // Vuelve al mismo espacio si vino por enlace directo; al Landing si no.
     setSpaceId(experienceFromUrl());
     setStepKey("hours");
-    setHours(2);
+    setHours(defaultHoursFor(experienceFromUrl()));
     setDate(null);
     setStartTime(null);
     setExtras([]);

@@ -61,11 +61,15 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onNext }: 
         {HOURS_OPTIONS.map((h) => {
           const isSel = hours === h;
           return (
-            <button
+            <MagneticButton
               key={h}
               type="button"
               onClick={() => onChange(h)}
-              className={`cursor-pointer overflow-hidden rounded-xl border-2 text-left transition ${
+              strengthX={0.06}
+              strengthY={0.08}
+              maxX={4}
+              maxY={4}
+              className={`group cursor-pointer overflow-hidden rounded-xl border-2 text-left transition-[box-shadow,border-color] hover:shadow-lg ${
                 isSel ? "border-accent" : "border-black hover:border-accent"
               }`}
             >
@@ -73,14 +77,14 @@ export default function StepHours({ stepNo, spaceId, hours, onChange, onNext }: 
                 <Photo
                   src={s.hourImages?.[h]}
                   alt={`${s.name} ${h} horas`}
-                  className="h-28 w-full"
+                  className="h-28 w-full transition-transform duration-500 group-hover:scale-110"
                 />
               )}
               <div className="p-2.5">
                 <div className="text-sm font-semibold">{h} horas</div>
                 <div className="mt-0.5 text-[0.95rem] font-bold">{fmt(s.hourly[h])}</div>
               </div>
-            </button>
+            </MagneticButton>
           );
         })}
       </div>

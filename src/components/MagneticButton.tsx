@@ -3,12 +3,23 @@ import { gsap } from "gsap";
 
 const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v));
 
-// Botón con efecto magnético: se "inclina" suavemente hacia el cursor y vuelve
-// a su sitio al salir. Respeta prefers-reduced-motion.
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+  strengthX?: number;
+  strengthY?: number;
+  maxX?: number;
+  maxY?: number;
+}
+
+// Botón/tarjeta con efecto magnético: se inclina suavemente hacia el cursor y
+// vuelve a su sitio al salir. Intensidad configurable (suave para tarjetas).
 export default function MagneticButton({
   children,
+  strengthX = 0.07,
+  strengthY = 0.18,
+  maxX = 3.5,
+  maxY = 3,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+}: Props) {
   const ref = useRef<HTMLButtonElement>(null);
   const xTo = useRef<((v: number) => void) | null>(null);
   const yTo = useRef<((v: number) => void) | null>(null);
@@ -16,8 +27,8 @@ export default function MagneticButton({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    xTo.current = gsap.quickTo(el, "x", { duration: 0.18, ease: "power2.out" });
-    yTo.current = gsap.quickTo(el, "y", { duration: 0.18, ease: "power2.out" });
+    xTo.current = gsap.quickTo(el, "x", { duration: 0.2, ease: "power2.out" });
+    yTo.current = gsap.quickTo(el, "y", { duration: 0.2, ease: "power2.out" });
     return () => {
       gsap.killTweensOf(el);
     };
@@ -29,8 +40,8 @@ export default function MagneticButton({
     const r = el.getBoundingClientRect();
     const relX = e.clientX - (r.left + r.width / 2);
     const relY = e.clientY - (r.top + r.height / 2);
-    xTo.current?.(clamp(relX * 0.07, 3.5));
-    yTo.current?.(clamp(relY * 0.18, 3));
+    xTo.current?.(clamp(relX * strengthX, maxX));
+    yTo.current?.(clamp(relY * strengthY, maxY));
   };
 
   const onLeave = () => {
