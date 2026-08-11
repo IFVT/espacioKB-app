@@ -108,10 +108,10 @@ export default function Background() {
         <defs>
           <linearGradient id="kbFadeUp" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#fae100" stopOpacity="0" />
-            <stop offset="100%" stopColor="#fae100" stopOpacity="0.26" />
+            <stop offset="100%" stopColor="#fae100" stopOpacity="0.5" />
           </linearGradient>
           <linearGradient id="kbFadeDown" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#fae100" stopOpacity="0.26" />
+            <stop offset="0%" stopColor="#fae100" stopOpacity="0.5" />
             <stop offset="100%" stopColor="#fae100" stopOpacity="0" />
           </linearGradient>
         </defs>

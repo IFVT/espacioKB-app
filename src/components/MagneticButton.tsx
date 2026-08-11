@@ -29,8 +29,8 @@ export default function MagneticButton({
     const r = el.getBoundingClientRect();
     const relX = e.clientX - (r.left + r.width / 2);
     const relY = e.clientY - (r.top + r.height / 2);
-    xTo.current?.(clamp(relX * 0.12, 6));
-    yTo.current?.(clamp(relY * 0.3, 5));
+    xTo.current?.(clamp(relX * 0.07, 3.5));
+    yTo.current?.(clamp(relY * 0.18, 3));
   };
 
   const onLeave = () => {
