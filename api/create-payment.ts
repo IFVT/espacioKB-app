@@ -134,7 +134,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       id: string;
       init_point: string;
       sandbox_init_point?: string;
-      live_mode?: boolean;
     };
 
     await supabase
@@ -149,12 +148,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount: booking.amount,
     });
 
+    // En modo prueba (MP_MODE=test) se usa el checkout de sandbox; en producción,
+    // el checkout normal. Así se testea con tarjetas de prueba sin cambiar código.
+    const checkoutUrl =
+      process.env.MP_MODE === "test" && pref.sandbox_init_point
+        ? pref.sandbox_init_point
+        : pref.init_point;
+
     return res.status(200).json({
       reservationId: reservation.id,
-      checkoutUrl: pref.init_point,
+      checkoutUrl,
       amount: booking.amount,
-      // TEMP diagnóstico test/producción:
-      _diag: { live_mode: pref.live_mode, sandbox_init_point: pref.sandbox_init_point },
     });
   } catch (err) {
     // Si falla la pasarela, liberamos el cupo en vez de dejarlo bloqueado.
