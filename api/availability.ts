@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { SCHEDULE } from "../src/data/spaces";
-import { getSupabase } from "./_lib/supabase";
-import { freeStartTimes, weekdayOf, type TakenRange } from "./_lib/booking";
+import { SCHEDULE } from "../src/data/spaces.js";
+import { getSupabase } from "./_lib/supabase.js";
+import { freeStartTimes, weekdayOf, type TakenRange } from "./_lib/booking.js";
 
 /** GET /api/availability?space=karaoke&date=2026-07-16&hours=2 */
 export default async function handler(req: VercelRequest, res: VercelResponse) {

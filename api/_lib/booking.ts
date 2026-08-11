@@ -1,5 +1,5 @@
-import { SPACES, SCHEDULE, type SpaceId } from "../../src/data/spaces";
-import { calcTotal } from "../../src/lib/pricing";
+import { SPACES, SCHEDULE, type SpaceId } from "../../src/data/spaces.js";
+import { calcTotal } from "../../src/lib/pricing.js";
 
 // ---------------------------------------------------------------------------
 // Tiempo. Colombia es UTC-5 fijo (sin horario de verano), así que trabajamos

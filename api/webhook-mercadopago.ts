@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getSupabase } from "./_lib/supabase";
-import { mpFetch, verifyWebhookSignature } from "./_lib/mp";
-import { logPaymentEvent } from "./_lib/audit";
+import { getSupabase } from "./_lib/supabase.js";
+import { mpFetch, verifyWebhookSignature } from "./_lib/mp.js";
+import { logPaymentEvent } from "./_lib/audit.js";
 
 /**
  * POST /api/webhook-mercadopago

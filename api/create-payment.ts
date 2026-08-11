@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { SPACES } from "../src/data/spaces";
-import { getSupabase } from "./_lib/supabase";
-import { BadRequest, validateBooking, validateCustomer } from "./_lib/booking";
-import { mpFetch } from "./_lib/mp";
-import { logPaymentEvent } from "./_lib/audit";
+import { SPACES } from "../src/data/spaces.js";
+import { getSupabase } from "./_lib/supabase.js";
+import { BadRequest, validateBooking, validateCustomer } from "./_lib/booking.js";
+import { mpFetch } from "./_lib/mp.js";
+import { logPaymentEvent } from "./_lib/audit.js";
 
 // PSE manda al cliente al portal de su banco (login, clave, a veces token), así
 // que 15 min se quedaban cortos. 30 da margen sin bloquear el cupo de más.
