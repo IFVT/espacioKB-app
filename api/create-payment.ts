@@ -130,7 +130,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!mpRes.ok) {
       throw new Error(`Mercado Pago respondió ${mpRes.status}: ${await mpRes.text()}`);
     }
-    const pref = (await mpRes.json()) as { id: string; init_point: string };
+    const pref = (await mpRes.json()) as {
+      id: string;
+      init_point: string;
+      sandbox_init_point?: string;
+      live_mode?: boolean;
+    };
 
     await supabase
       .from("reservations")
@@ -148,6 +153,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       reservationId: reservation.id,
       checkoutUrl: pref.init_point,
       amount: booking.amount,
+      // TEMP diagnóstico test/producción:
+      _diag: { live_mode: pref.live_mode, sandbox_init_point: pref.sandbox_init_point },
     });
   } catch (err) {
     // Si falla la pasarela, liberamos el cupo en vez de dejarlo bloqueado.
