@@ -30,25 +30,3 @@ body {
   line-height: 1.5;
 }
 
-/* Manchas del fondo: solo morphean la forma (el desplazamiento lo hace GSAP,
-   con un rango grande para que el movimiento se note). */
-@keyframes kb-blob {
-  0%,
-  100% {
-    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
-  }
-  25% {
-    border-radius: 58% 42% 40% 60% / 52% 58% 42% 48%;
-  }
-  50% {
-    border-radius: 62% 38% 55% 45% / 60% 40% 60% 40%;
-  }
-  75% {
-    border-radius: 40% 60% 48% 52% / 45% 50% 50% 55%;
-  }
-}
-
-.kb-blob {
-  border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
-  animation: kb-blob 12s ease-in-out infinite;
-}
