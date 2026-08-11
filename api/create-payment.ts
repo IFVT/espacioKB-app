@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { SPACES } from "../src/data/spaces";
 import { getSupabase } from "./_lib/supabase";
 import { BadRequest, validateBooking, validateCustomer } from "./_lib/booking";
+import { mpFetch } from "./_lib/mp";
 
 // PSE manda al cliente al portal de su banco (login, clave, a veces token), así
 // que 15 min se quedaban cortos. 30 da margen sin bloquear el cupo de más.
@@ -74,12 +75,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!baseUrl || !token) throw new Error("Faltan PUBLIC_BASE_URL / MP_ACCESS_TOKEN");
 
     const space = SPACES[booking.space];
-    const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
+    const mpRes = await mpFetch("/checkout/preferences", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      // Evita preferencias duplicadas si el cliente reintenta el mismo hold.
+      headers: { "X-Idempotency-Key": reservation.id },
       body: JSON.stringify({
         items: [
           {
