@@ -43,16 +43,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ date, slots });
   } catch (err) {
     console.error("availability:", err);
-    // TEMP diagnóstico: expone el detalle del error para depurar en producción.
-    const anyErr = err as { message?: string; code?: string; details?: string; hint?: string };
-    return res.status(500).json({
-      error: "No se pudo consultar la disponibilidad",
-      _diag: {
-        message: anyErr?.message ?? String(err),
-        code: anyErr?.code,
-        details: anyErr?.details,
-        hint: anyErr?.hint,
-      },
-    });
+    return res.status(500).json({ error: "No se pudo consultar la disponibilidad" });
   }
 }
