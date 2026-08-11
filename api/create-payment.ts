@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { SPACES } from "../src/data/spaces.js";
+import { SPACES } from "./_lib/spaces.js";
 import { getSupabase } from "./_lib/supabase.js";
 import { BadRequest, validateBooking, validateCustomer } from "./_lib/booking.js";
 import { mpFetch } from "./_lib/mp.js";

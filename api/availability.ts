@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { SCHEDULE } from "../src/data/spaces.js";
+import { SCHEDULE } from "./_lib/spaces.js";
 import { getSupabase } from "./_lib/supabase.js";
 import { freeStartTimes, weekdayOf, type TakenRange } from "./_lib/booking.js";
 
