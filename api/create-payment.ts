@@ -148,12 +148,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount: booking.amount,
     });
 
-    // En modo prueba (MP_MODE=test) se usa el checkout de sandbox; en producción,
-    // el checkout normal. Así se testea con tarjetas de prueba sin cambiar código.
-    const checkoutUrl =
-      process.env.MP_MODE === "test" && pref.sandbox_init_point
-        ? pref.sandbox_init_point
-        : pref.init_point;
+    // SIEMPRE init_point. Con un token de vendedor de PRUEBA, init_point ya abre
+    // un checkout de prueba (las transacciones son ficticias porque la cuenta que
+    // cobra es de prueba). El sandbox_init_point está deprecado y provoca que el
+    // pago NO se cree ("No pudimos procesar tu pago" sin registro de pago) — lo
+    // confirmamos con el diagnóstico (0 pagos creados) y con la doc/comunidad MP.
+    const checkoutUrl = pref.init_point;
 
     return res.status(200).json({
       reservationId: reservation.id,
