@@ -1,0 +1,54 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { mpFetch } from "./_lib/mp.js";
+
+// Diagnóstico TEMPORAL (solo modo prueba). Busca en Mercado Pago los pagos
+// asociados a una reserva (external_reference) y devuelve status + status_detail
+// para entender POR QUÉ un pago fue rechazado en sandbox. No expone datos
+// personales. Quitar/deshabilitar antes de producción — de hecho responde 404
+// si MP_MODE !== "test".
+interface MpPayment {
+  id: number
+  status: string
+  status_detail: string
+  transaction_amount: number
+  currency_id: string
+  payment_method_id: string
+  payment_type_id: string
+  date_created: string
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (process.env.MP_MODE !== "test") {
+    return res.status(404).json({ error: "No disponible" })
+  }
+
+  const ref = String(req.query.ref ?? req.query.id ?? "")
+  if (!ref) {
+    return res.status(400).json({ error: "Falta ?ref=<external_reference de la reserva>" })
+  }
+
+  try {
+    const r = await mpFetch(
+      `/v1/payments/search?external_reference=${encodeURIComponent(ref)}&sort=date_created&criteria=desc`,
+    )
+    if (!r.ok) {
+      return res.status(502).json({ error: `MP respondió ${r.status}`, body: await r.text() })
+    }
+    const data = (await r.json()) as { results?: MpPayment[] }
+    const payments = (data.results ?? []).map((p) => ({
+      id: p.id,
+      status: p.status,
+      status_detail: p.status_detail,
+      amount: p.transaction_amount,
+      currency: p.currency_id,
+      method: `${p.payment_type_id}/${p.payment_method_id}`,
+      created: p.date_created,
+    }))
+
+    res.setHeader("Cache-Control", "no-store")
+    return res.status(200).json({ external_reference: ref, count: payments.length, payments })
+  } catch (err) {
+    console.error("debug-payment:", err)
+    return res.status(500).json({ error: String(err) })
+  }
+}
