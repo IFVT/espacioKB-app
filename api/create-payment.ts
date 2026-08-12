@@ -103,10 +103,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           },
         ],
         payer: { name: customer.name, email: customer.email },
-        // Solo en PRUEBA: obliga a iniciar sesión (desactiva pago como invitado)
-        // para poder loguearse con el comprador de prueba. En producción NO se
-        // pone, para que los clientes puedan pagar como invitados.
-        ...(process.env.MP_MODE === "test" ? { purpose: "wallet_purchase" } : {}),
         // Solo PSE (bank_transfer) y tarjeta. Se excluye el pago en efectivo
         // (Efecty y similares): el cliente puede tardar DÍAS en pagarlo, y para
         // entonces el hold ya expiró y el cupo se vendió a otra persona.
