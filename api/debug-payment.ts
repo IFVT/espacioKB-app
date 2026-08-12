@@ -85,6 +85,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // ?fullpref=1[&drop=campo1,campo2] → crea una preferencia igual a la real y
+  // permite OMITIR campos para bisectar cuál rompe el checkout (COW00).
+  if (req.query.fullpref) {
+    try {
+      const baseUrl = process.env.PUBLIC_BASE_URL ?? ""
+      const drop = new Set(String(req.query.drop ?? "").split(",").map((s) => s.trim()))
+      const expISO = new Date(Date.now() + 30 * 60000).toISOString()
+
+      const pref: Record<string, unknown> = {
+        items: [
+          { title: "Karaoke · 2h · 2026-08-30 18:00", quantity: 1, currency_id: "COP", unit_price: 180000 },
+        ],
+      }
+      if (!drop.has("payer")) pref.payer = { name: "Comprador Prueba", email: "test_user_x@testuser.com" }
+      if (!drop.has("payment_methods")) {
+        pref.payment_methods = { excluded_payment_types: [{ id: "ticket" }, { id: "atm" }] }
+      }
+      if (!drop.has("statement_descriptor")) pref.statement_descriptor = "ESPACIO KB"
+      if (!drop.has("external_reference")) pref.external_reference = "debug-fullpref"
+      if (!drop.has("notification_url")) pref.notification_url = `${baseUrl}/api/webhook-mercadopago`
+      if (!drop.has("back_urls")) {
+        pref.back_urls = {
+          success: `${baseUrl}/?pago=ok`,
+          failure: `${baseUrl}/?pago=error`,
+          pending: `${baseUrl}/?pago=pendiente`,
+        }
+        if (!drop.has("auto_return")) pref.auto_return = "approved"
+      }
+      if (!drop.has("expires")) {
+        pref.expires = true
+        pref.expiration_date_to = expISO
+      }
+
+      const r = await mpFetch("/checkout/preferences", {
+        method: "POST",
+        body: JSON.stringify(pref),
+      })
+      const body = (await r.json()) as { id?: string; init_point?: string }
+      return res.status(r.ok ? 200 : 502).json({
+        ok: r.ok,
+        status: r.status,
+        dropped: [...drop].filter(Boolean),
+        id: body.id,
+        init_point: body.init_point,
+        raw: r.ok ? undefined : body,
+      })
+    } catch (err) {
+      console.error("debug-payment fullpref:", err)
+      return res.status(500).json({ error: String(err) })
+    }
+  }
+
   // ?recent=1 → últimos pagos de la cuenta (sin filtrar por reserva), para ver
   // si algún intento llegó a crear pago y con qué status_detail se rechazó.
   const ref = String(req.query.ref ?? req.query.id ?? "")
