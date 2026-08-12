@@ -22,6 +22,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: "No disponible" })
   }
 
+  // ?account=1 → devuelve de QUIÉN es el token (para saber si es la cuenta de
+  // prueba correcta del vendedor). No expone el token, solo datos de la cuenta.
+  if (req.query.account) {
+    try {
+      const r = await mpFetch("/users/me")
+      if (!r.ok) return res.status(502).json({ error: `MP ${r.status}`, body: await r.text() })
+      const u = (await r.json()) as {
+        id: number
+        nickname: string
+        site_id: string
+        country_id: string
+        tags?: string[]
+        registration_date?: string
+      }
+      return res.status(200).json({
+        account: {
+          id: u.id,
+          nickname: u.nickname,
+          site_id: u.site_id,
+          country_id: u.country_id,
+          tags: u.tags ?? [],
+          is_test_user: (u.tags ?? []).includes("test_user"),
+          registration_date: u.registration_date,
+        },
+      })
+    } catch (err) {
+      console.error("debug-payment account:", err)
+      return res.status(500).json({ error: String(err) })
+    }
+  }
+
   const ref = String(req.query.ref ?? req.query.id ?? "")
   if (!ref) {
     return res.status(400).json({ error: "Falta ?ref=<external_reference de la reserva>" })
