@@ -53,15 +53,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // ?recent=1 → últimos pagos de la cuenta (sin filtrar por reserva), para ver
+  // si algún intento llegó a crear pago y con qué status_detail se rechazó.
   const ref = String(req.query.ref ?? req.query.id ?? "")
-  if (!ref) {
-    return res.status(400).json({ error: "Falta ?ref=<external_reference de la reserva>" })
+  if (!ref && !req.query.recent) {
+    return res.status(400).json({ error: "Falta ?ref=<external_reference> o ?recent=1" })
   }
 
   try {
-    const r = await mpFetch(
-      `/v1/payments/search?external_reference=${encodeURIComponent(ref)}&sort=date_created&criteria=desc`,
-    )
+    const query = req.query.recent
+      ? `/v1/payments/search?sort=date_created&criteria=desc&limit=15`
+      : `/v1/payments/search?external_reference=${encodeURIComponent(ref)}&sort=date_created&criteria=desc`
+    const r = await mpFetch(query)
     if (!r.ok) {
       return res.status(502).json({ error: `MP respondió ${r.status}`, body: await r.text() })
     }
