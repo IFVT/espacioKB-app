@@ -53,6 +53,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // ?minpref=1 → crea la preferencia MÁS simple posible y devuelve sus init_points.
+  // Sirve para aislar si el fallo del checkout es por un campo de nuestra
+  // preferencia o por la cuenta/config de Mercado Pago.
+  if (req.query.minpref) {
+    try {
+      const baseUrl = process.env.PUBLIC_BASE_URL ?? ""
+      const r = await mpFetch("/checkout/preferences", {
+        method: "POST",
+        body: JSON.stringify({
+          items: [{ title: "Prueba", quantity: 1, unit_price: 1000, currency_id: "COP" }],
+          back_urls: { success: `${baseUrl}/?pago=ok` },
+        }),
+      })
+      const body = (await r.json()) as {
+        id?: string
+        init_point?: string
+        sandbox_init_point?: string
+      }
+      return res.status(r.ok ? 200 : 502).json({
+        ok: r.ok,
+        status: r.status,
+        id: body.id,
+        init_point: body.init_point,
+        sandbox_init_point: body.sandbox_init_point,
+        raw: r.ok ? undefined : body,
+      })
+    } catch (err) {
+      console.error("debug-payment minpref:", err)
+      return res.status(500).json({ error: String(err) })
+    }
+  }
+
   // ?recent=1 → últimos pagos de la cuenta (sin filtrar por reserva), para ver
   // si algún intento llegó a crear pago y con qué status_detail se rechazó.
   const ref = String(req.query.ref ?? req.query.id ?? "")
