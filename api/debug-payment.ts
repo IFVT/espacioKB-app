@@ -85,6 +85,63 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // ?pay=<external_reference>[&amount=180000] → completa un pago de PRUEBA por la
+  // API (tokeniza la tarjeta de prueba de CO con titular APRO y crea el pago),
+  // para verificar el webhook sin pasar por la UI del checkout.
+  if (req.query.pay) {
+    try {
+      const ref = String(req.query.pay)
+      const amount = Number(req.query.amount ?? 180000)
+      const baseUrl = process.env.PUBLIC_BASE_URL ?? ""
+
+      const tokRes = await mpFetch("/v1/card_tokens", {
+        method: "POST",
+        body: JSON.stringify({
+          card_number: "5254133674403564",
+          expiration_month: 11,
+          expiration_year: 2030,
+          security_code: "123",
+          cardholder: { name: "APRO", identification: { type: "CC", number: "123456789" } },
+        }),
+      })
+      const tok = (await tokRes.json()) as { id?: string }
+      if (!tokRes.ok || !tok.id) {
+        return res.status(502).json({ step: "card_token", status: tokRes.status, body: tok })
+      }
+
+      const payRes = await mpFetch("/v1/payments", {
+        method: "POST",
+        headers: { "X-Idempotency-Key": `debug-${ref}-${Date.now()}` },
+        body: JSON.stringify({
+          transaction_amount: amount,
+          token: tok.id,
+          description: "Debug test payment",
+          installments: 1,
+          payment_method_id: "master",
+          payer: { email: "test_user_debug@testuser.com" },
+          external_reference: ref,
+          notification_url: `${baseUrl}/api/webhook-mercadopago`,
+        }),
+      })
+      const pay = (await payRes.json()) as {
+        id?: number
+        status?: string
+        status_detail?: string
+      }
+      return res.status(payRes.ok ? 200 : 502).json({
+        step: "payment",
+        http: payRes.status,
+        id: pay.id,
+        payment_status: pay.status,
+        status_detail: pay.status_detail,
+        raw: payRes.ok ? undefined : pay,
+      })
+    } catch (err) {
+      console.error("debug-payment pay:", err)
+      return res.status(500).json({ error: String(err) })
+    }
+  }
+
   // ?fullpref=1[&drop=campo1,campo2] → crea una preferencia igual a la real y
   // permite OMITIR campos para bisectar cuál rompe el checkout (COW00).
   if (req.query.fullpref) {
