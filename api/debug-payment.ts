@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { mpFetch } from "./_lib/mp.js";
+import { getSupabase } from "./_lib/supabase.js";
 
 // Diagnóstico TEMPORAL (solo modo prueba). Busca en Mercado Pago los pagos
 // asociados a una reserva (external_reference) y devuelve status + status_detail
@@ -21,6 +22,25 @@ interface MpPayment {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (process.env.MP_MODE !== "test") {
     return res.status(404).json({ error: "No disponible" })
+  }
+
+  // ?events=<reservationId> → lee la bitácora payment_events de una reserva,
+  // para ver si el webhook corrió y qué registró.
+  if (req.query.events) {
+    try {
+      const ref = String(req.query.events)
+      const supabase = getSupabase()
+      const { data, error } = await supabase
+        .from("payment_events")
+        .select("event, status, amount, payment_id, detail, created_at")
+        .eq("reservation_id", ref)
+        .order("created_at", { ascending: true })
+      if (error) return res.status(500).json({ error: error.message })
+      return res.status(200).json({ reservation_id: ref, count: (data ?? []).length, events: data })
+    } catch (err) {
+      console.error("debug-payment events:", err)
+      return res.status(500).json({ error: String(err) })
+    }
   }
 
   // ?tokenhead=1 → primeros caracteres del token en uso (para verificar si la
