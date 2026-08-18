@@ -22,7 +22,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     customer_email: String(req.query.to ?? process.env.NOTIFY_EMAIL ?? ""),
   }
 
-  const out: Record<string, unknown> = {}
+  const out: Record<string, unknown> = {
+    google_env: {
+      email: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: !!process.env.GOOGLE_PRIVATE_KEY,
+      calendarId: !!process.env.GOOGLE_CALENDAR_ID,
+    },
+  }
   try {
     await sendConfirmationEmails(sample)
     out.email = "ok"
