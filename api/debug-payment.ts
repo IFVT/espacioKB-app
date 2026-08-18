@@ -106,16 +106,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const amount = Number(req.query.amount ?? 180000)
       const baseUrl = process.env.PUBLIC_BASE_URL ?? ""
 
-      const tokRes = await mpFetch("/v1/card_tokens", {
-        method: "POST",
-        body: JSON.stringify({
-          card_number: "5254133674403564",
-          expiration_month: 11,
-          expiration_year: 2030,
-          security_code: "123",
-          cardholder: { name: "APRO", identification: { type: "CC", number: "123456789" } },
-        }),
+      const pk = String(req.query.pk ?? "")
+      const cardBody = JSON.stringify({
+        card_number: "5254133674403564",
+        expiration_month: 11,
+        expiration_year: 2030,
+        security_code: "123",
+        cardholder: { name: "APRO", identification: { type: "CC", number: "123456789" } },
       })
+      // El card_token se crea con la PUBLIC KEY (contexto de prueba), no con el
+      // access token. Si se pasa ?pk=, se usa esa vía; si no, cae a mpFetch.
+      const tokRes = pk
+        ? await fetch(`https://api.mercadopago.com/v1/card_tokens?public_key=${encodeURIComponent(pk)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: cardBody,
+          })
+        : await mpFetch("/v1/card_tokens", { method: "POST", body: cardBody })
       const tok = (await tokRes.json()) as { id?: string }
       if (!tokRes.ok || !tok.id) {
         return res.status(502).json({ step: "card_token", status: tokRes.status, body: tok })
