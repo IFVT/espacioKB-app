@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getSupabase } from "./_lib/supabase.js";
 import { mpFetch, verifyWebhookSignature } from "./_lib/mp.js";
 import { logPaymentEvent } from "./_lib/audit.js";
+import { sendConfirmationEmails, addCalendarEvent, type ConfirmedReservation } from "./_lib/notify.js";
 
 /**
  * POST /api/webhook-mercadopago
@@ -59,7 +60,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (payment.status === "approved") {
       const { data: current } = await supabase
         .from("reservations")
-        .select("id, status, amount")
+        .select(
+          "id, status, amount, space, date, start_time, hours, extras, customer_name, customer_phone, customer_email",
+        )
         .eq("id", reservationId)
         .single();
 
@@ -132,7 +135,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (confirmed && confirmed.length > 0) {
-        // TODO(exactamente una vez): Google Calendar + Sheets + correos.
         console.log(`Reserva confirmada: ${reservationId} (pago ${paymentId})`);
         await logPaymentEvent(supabase, {
           reservationId,
@@ -141,6 +143,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           status: payment.status,
           amount: current.amount,
         });
+
+        // Efectos secundarios (exactamente una vez, porque el update es
+        // idempotente). Best-effort: si Resend/Google fallan, NO rompemos el
+        // webhook — la reserva ya quedó confirmada. Cada resultado se registra.
+        const resv: ConfirmedReservation = {
+          id: reservationId,
+          space: current.space,
+          date: current.date,
+          start_time: current.start_time,
+          hours: current.hours,
+          extras: current.extras,
+          amount: current.amount,
+          customer_name: current.customer_name,
+          customer_phone: current.customer_phone,
+          customer_email: current.customer_email,
+        };
+        try {
+          await sendConfirmationEmails(resv);
+          await logPaymentEvent(supabase, { reservationId, paymentId, event: "email_sent" });
+        } catch (e) {
+          console.error("email:", e);
+          await logPaymentEvent(supabase, {
+            reservationId,
+            paymentId,
+            event: "email_error",
+            detail: { message: String(e) },
+          });
+        }
+        try {
+          await addCalendarEvent(resv);
+          await logPaymentEvent(supabase, { reservationId, paymentId, event: "calendar_added" });
+        } catch (e) {
+          console.error("calendar:", e);
+          await logPaymentEvent(supabase, {
+            reservationId,
+            paymentId,
+            event: "calendar_error",
+            detail: { message: String(e) },
+          });
+        }
       }
       return res.status(200).json({ ok: true });
     }
