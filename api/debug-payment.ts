@@ -24,6 +24,56 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: "No disponible" })
   }
 
+  // ?whsecret=1 → indica si MP_WEBHOOK_SECRET está configurado (sin exponerlo).
+  if (req.query.whsecret) {
+    const s = process.env.MP_WEBHOOK_SECRET ?? ""
+    return res.status(200).json({ set: s.length > 0, length: s.length })
+  }
+
+  // ?confirm=<paymentId> → corre manualmente la lógica de confirmación del
+  // webhook (consulta el pago en MP y marca la reserva como confirmed). Sirve
+  // para probar la lógica saltando la verificación de firma.
+  if (req.query.confirm) {
+    try {
+      const paymentId = String(req.query.confirm)
+      const mpRes = await mpFetch(`/v1/payments/${paymentId}`)
+      if (!mpRes.ok) return res.status(502).json({ error: `MP ${mpRes.status}`, body: await mpRes.text() })
+      const payment = (await mpRes.json()) as {
+        status: string
+        currency_id: string
+        external_reference: string | null
+        transaction_amount: number
+      }
+      const reservationId = payment.external_reference
+      if (!reservationId) return res.status(400).json({ error: "pago sin external_reference" })
+      const supabase = getSupabase()
+      const { data: current } = await supabase
+        .from("reservations")
+        .select("id, status, amount")
+        .eq("id", reservationId)
+        .single()
+      const { data: confirmed, error } = await supabase
+        .from("reservations")
+        .update({ status: "confirmed", payment_provider: "mercadopago", payment_id: paymentId, hold_expires_at: null })
+        .eq("id", reservationId)
+        .neq("status", "confirmed")
+        .select("id")
+      return res.status(200).json({
+        payment_status: payment.status,
+        currency: payment.currency_id,
+        amount: payment.transaction_amount,
+        reservationId,
+        before: current?.status ?? null,
+        expected_amount: current?.amount ?? null,
+        updated: (confirmed ?? []).length,
+        error: error?.message ?? null,
+      })
+    } catch (err) {
+      console.error("debug-payment confirm:", err)
+      return res.status(500).json({ error: String(err) })
+    }
+  }
+
   // ?events=<reservationId> → lee la bitácora payment_events de una reserva,
   // para ver si el webhook corrió y qué registró.
   if (req.query.events) {
