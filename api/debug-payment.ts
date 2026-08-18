@@ -22,6 +22,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: "No disponible" })
   }
 
+  // ?tokenhead=1 → primeros caracteres del token en uso (para verificar si la
+  // variable de entorno realmente cambió). NO expone el secreto (solo el prefijo
+  // público APP_USR-<clientid>).
+  if (req.query.tokenhead) {
+    const tk = process.env.MP_ACCESS_TOKEN ?? ""
+    return res.status(200).json({
+      head: tk.slice(0, 16),
+      length: tk.length,
+      mp_mode: process.env.MP_MODE ?? null,
+    })
+  }
+
   // ?account=1 → devuelve de QUIÉN es el token (para saber si es la cuenta de
   // prueba correcta del vendedor). No expone el token, solo datos de la cuenta.
   if (req.query.account) {
