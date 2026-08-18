@@ -15,6 +15,7 @@ interface MpPayment {
   payment_method_id: string
   payment_type_id: string
   date_created: string
+  external_reference?: string
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -236,6 +237,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount: p.transaction_amount,
       currency: p.currency_id,
       method: `${p.payment_type_id}/${p.payment_method_id}`,
+      external_reference: p.external_reference,
       created: p.date_created,
     }))
 
