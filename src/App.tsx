@@ -5,7 +5,6 @@ import { SPACES } from "./data/spaces";
 import { calcTotal, fmt } from "./lib/pricing";
 import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
-import Background from "./components/Background";
 import MagneticButton from "./components/MagneticButton";
 import PaymentReturn from "./components/PaymentReturn";
 import Stepper from "./components/Stepper";
@@ -171,7 +170,6 @@ export default function App() {
 
   return (
     <>
-      <Background />
       <div
         ref={contentRef}
         style={{ opacity: 0 }}
