@@ -9,3 +9,13 @@ export function formatTime(t: string | null | undefined): string {
   const h12 = h % 12 === 0 ? 12 : h % 12
   return `${h12}:${m[2]} ${period}`
 }
+
+// Rango de inicio → fin (inicio + duración). Ej.: ("19:00", 2) → "7:00 p.m. – 9:00 p.m."
+// El fin puede cruzar la medianoche: ("23:00", 3) → "11:00 p.m. – 2:00 a.m.".
+export function formatRange(startTime: string | null | undefined, hours: number): string {
+  const m = /^(\d{1,2}):(\d{2})/.exec(startTime ?? "")
+  if (!m) return formatTime(startTime)
+  const endHour = Number(m[1]) + hours
+  const endTime = `${String(endHour).padStart(2, "0")}:${m[2]}`
+  return `${formatTime(startTime)} – ${formatTime(endTime)}`
+}

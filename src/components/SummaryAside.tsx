@@ -1,6 +1,6 @@
 import { SPACES, MIN_CONSUMO, type SpaceId } from "../data/spaces";
 import { calcTotal, fmt } from "../lib/pricing";
-import { formatTime } from "../lib/time";
+import { formatRange } from "../lib/time";
 
 interface Props {
   spaceId: SpaceId;
@@ -27,7 +27,7 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
           {date ? ` · ${date}` : ""}
         </div>
         <div className="mt-0.5 font-medium text-txt">
-          {startTime ? `Hora: ${formatTime(startTime)}` : "Elige la hora de inicio"}
+          {startTime ? `Hora: ${formatRange(startTime, hours)}` : "Elige la hora de inicio"}
         </div>
       </div>
 
