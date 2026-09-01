@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SpaceId } from "../data/spaces";
-import { getAvailability } from "../lib/api";
+import { getAvailability, type StartOption } from "../lib/api";
 import { formatTime } from "../lib/time";
 import Calendar from "./Calendar";
 import MagneticButton from "./MagneticButton";
@@ -28,7 +28,7 @@ export default function StepSchedule({
   onBack,
   onNext,
 }: Props) {
-  const [slots, setSlots] = useState<string[]>([]);
+  const [slots, setSlots] = useState<StartOption[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -74,25 +74,42 @@ export default function StepSchedule({
             </div>
           ) : slots.length === 0 ? (
             <div className="rounded-xl bg-card2 p-3.5 text-[0.82rem] text-muted">
-              No hay horarios libres para esta duración en el día elegido.
+              No hay horarios para esta duración en el día elegido.
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {slots.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => onPickTime(t)}
-                  className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition ${
-                    startTime === t
-                      ? "border-accent bg-card2 text-txt"
-                      : "border-black bg-card2 text-muted hover:border-accent"
-                  }`}
-                >
-                  {formatTime(t)}
-                </button>
-              ))}
-            </div>
+            <>
+              <div className="flex flex-wrap gap-2">
+                {slots.map((s) =>
+                  s.taken ? (
+                    <span
+                      key={s.time}
+                      title="Ocupado"
+                      className="cursor-not-allowed rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-400 line-through"
+                    >
+                      {formatTime(s.time)}
+                    </span>
+                  ) : (
+                    <button
+                      key={s.time}
+                      type="button"
+                      onClick={() => onPickTime(s.time)}
+                      className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition ${
+                        startTime === s.time
+                          ? "border-accent bg-card2 text-txt"
+                          : "border-black bg-card2 text-muted hover:border-accent"
+                      }`}
+                    >
+                      {formatTime(s.time)}
+                    </button>
+                  ),
+                )}
+              </div>
+              {!slots.some((s) => !s.taken) && (
+                <p className="mt-2 text-[0.82rem] text-red-500">
+                  Ese día ya no tiene cupos libres para esta duración. Prueba otra fecha u otra duración.
+                </p>
+              )}
+            </>
           )}
         </div>
       )}

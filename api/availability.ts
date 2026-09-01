@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { SCHEDULE } from "./_lib/spaces.js";
 import { getSupabase } from "./_lib/supabase.js";
-import { freeStartTimes, weekdayOf, type TakenRange } from "./_lib/booking.js";
+import { startTimeOptions, weekdayOf, type TakenRange } from "./_lib/booking.js";
 
 /** GET /api/availability?space=karaoke&date=2026-07-16&hours=2 */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -37,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
     if (error) throw error;
 
-    const slots = freeStartTimes(date, hours, (data ?? []) as TakenRange[]);
+    const slots = startTimeOptions(date, hours, (data ?? []) as TakenRange[]);
     // Disponibilidad cambia constantemente: no cachear.
     res.setHeader("Cache-Control", "no-store");
     return res.status(200).json({ date, slots });

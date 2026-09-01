@@ -15,9 +15,14 @@ import type { Customer } from "./types";
 
 const allowMock = import.meta.env.DEV || import.meta.env.VITE_DEMO === "true";
 
+export interface StartOption {
+  time: string; // "HH:00" (24:00 = medianoche)
+  taken: boolean; // true = sala ocupada en esa franja
+}
+
 export interface AvailabilityResponse {
   date: string;
-  slots: string[]; // horas de inicio libres, p.ej. ["17:00","18:00"]
+  slots: StartOption[]; // todas las horas de inicio, con su estado (libre/ocupada)
 }
 
 async function readError(res: Response): Promise<string> {
@@ -96,10 +101,10 @@ export async function createPayment(
 // --- Mock solo para desarrollo -------------------------------------------
 // Muestra todas las horas que caben antes del cierre; no descuenta reservas.
 function mockAvailability(date: string, hours: number): AvailabilityResponse {
-  const slots: string[] = [];
-  const lastStart = Math.min(SCHEDULE.closeHour - hours, 23); // inicio máx 23:00
+  const slots: StartOption[] = [];
+  const lastStart = Math.min(SCHEDULE.closeHour - hours, 24); // inicio máx 24:00 (medianoche)
   for (let h = SCHEDULE.openHour; h <= lastStart; h++) {
-    slots.push(`${String(h).padStart(2, "0")}:00`);
+    slots.push({ time: `${String(h).padStart(2, "0")}:00`, taken: false });
   }
   return { date, slots };
 }

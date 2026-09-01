@@ -53,11 +53,25 @@ const parseTaken = (s: string): number => {
  * también se le suma, de modo que dos reservas quedan separadas al menos
  * `bufferMinutes` a cada lado.
  */
-export function freeStartTimes(
+export interface StartOption {
+  time: string; // "HH:00" (puede ser "24:00" = medianoche, para una reserva de 2h)
+  taken: boolean; // true = la sala ya está ocupada en esa franja
+}
+
+/**
+ * TODAS las horas de inicio posibles para la fecha/duración (según SCHEDULE),
+ * marcando cuáles están OCUPADAS. El front muestra las libres seleccionables y
+ * las ocupadas en rojo (cada espacio es una sola sala). Las que no respetan la
+ * anticipación mínima se omiten.
+ *
+ * El inicio llega hasta las 24:00 (medianoche) para permitir una reserva de 2h
+ * que termine a las 2am. El fin puede cruzar la medianoche: la base lo maneja.
+ */
+export function startTimeOptions(
   dateISO: string,
   hours: number,
   taken: TakenRange[],
-): string[] {
+): StartOption[] {
   const bufferMs = SCHEDULE.bufferMinutes * 60 * 1000;
   const earliest = nowWallMs() + SCHEDULE.minLeadHours * 3600 * 1000;
   const takenMs = taken.map((t) => ({
@@ -65,22 +79,18 @@ export function freeStartTimes(
     end: parseTaken(t.end_at),
   }));
 
-  const slots: string[] = [];
-  // El fin puede llegar hasta closeHour (26 = 2am, cruzando la medianoche: la
-  // base lo maneja). Pero el INICIO se topa en las 23:00 para no generar horas
-  // de inicio después de medianoche ("24:00"): así todas las horas de inicio
-  // son horas de reloj normales.
-  const lastStart = Math.min(SCHEDULE.closeHour - hours, 23);
+  const options: StartOption[] = [];
+  const lastStart = Math.min(SCHEDULE.closeHour - hours, 24);
 
   for (let h = SCHEDULE.openHour; h <= lastStart; h++) {
     const start = wallMs(dateISO, h);
-    if (start < earliest) continue; // no respeta la anticipación mínima
+    if (start < earliest) continue; // demasiado pronto: no se ofrece
 
     const end = start + hours * 3600 * 1000 + bufferMs;
     const overlaps = takenMs.some((t) => start < t.end && t.start < end);
-    if (!overlaps) slots.push(HHMM(h));
+    options.push({ time: HHMM(h), taken: overlaps });
   }
-  return slots;
+  return options;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,7 +108,7 @@ export interface BookingInput {
 export class BadRequest extends Error {}
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const TIME_RE = /^([01]\d|2[0-3]):00$/;
+const TIME_RE = /^([01]\d|2[0-4]):00$/; // permite 24:00 (medianoche) como inicio
 
 /** Valida el payload y devuelve el monto RECALCULADO EN EL SERVIDOR. */
 export function validateBooking(raw: unknown): BookingInput & { amount: number } {
