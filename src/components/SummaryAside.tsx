@@ -25,7 +25,9 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
         <div className="text-muted">
           {hours} horas
           {date ? ` · ${date}` : ""}
-          {startTime ? ` · ${formatTime(startTime)}` : ""}
+        </div>
+        <div className="mt-0.5 font-medium text-txt">
+          {startTime ? `Hora: ${formatTime(startTime)}` : "Elige la hora de inicio"}
         </div>
       </div>
 
