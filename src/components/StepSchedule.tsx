@@ -84,9 +84,12 @@ export default function StepSchedule({
                     <span
                       key={s.time}
                       title="Ocupado"
-                      className="cursor-not-allowed rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-400 line-through"
+                      className="flex cursor-not-allowed flex-col items-center rounded-xl border border-red-300 bg-red-50 px-3 py-1.5 text-sm leading-tight text-red-400"
                     >
                       {formatTime(s.time)}
+                      <span className="text-[0.62rem] font-semibold uppercase tracking-wide">
+                        Ocupado
+                      </span>
                     </span>
                   ) : (
                     <button
