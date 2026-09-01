@@ -90,8 +90,8 @@ export const MIN_CONSUMO = (hours: number): number => (hours >= 4 ? 400000 : 200
 export const SCHEDULE = {
   timezone: "America/Bogota",
   days: [4, 5, 6, 0], // jueves, viernes, sábado, domingo (0=dom … 6=sáb)
-  openHour: 17, // 5 p.m.
-  closeHour: 24, // medianoche
+  openHour: 19, // 7 p.m.
+  closeHour: 26, // 2 a.m. del día siguiente (horas "extendidas": 24=medianoche, 26=2am)
   slotStepMinutes: 60, // reservas empiezan en hora en punto
   bufferMinutes: 30, // separación entre reservas
   minLeadHours: 24, // anticipación mínima

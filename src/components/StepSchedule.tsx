@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SpaceId } from "../data/spaces";
 import { getAvailability } from "../lib/api";
+import { formatTime } from "../lib/time";
 import Calendar from "./Calendar";
 import MagneticButton from "./MagneticButton";
 
@@ -88,7 +89,7 @@ export default function StepSchedule({
                       : "border-black bg-card2 text-muted hover:border-accent"
                   }`}
                 >
-                  {t}
+                  {formatTime(t)}
                 </button>
               ))}
             </div>

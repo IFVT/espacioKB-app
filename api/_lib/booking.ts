@@ -66,7 +66,11 @@ export function freeStartTimes(
   }));
 
   const slots: string[] = [];
-  const lastStart = SCHEDULE.closeHour - hours;
+  // El fin puede llegar hasta closeHour (26 = 2am, cruzando la medianoche: la
+  // base lo maneja). Pero el INICIO se topa en las 23:00 para no generar horas
+  // de inicio después de medianoche ("24:00"): así todas las horas de inicio
+  // son horas de reloj normales.
+  const lastStart = Math.min(SCHEDULE.closeHour - hours, 23);
 
   for (let h = SCHEDULE.openHour; h <= lastStart; h++) {
     const start = wallMs(dateISO, h);

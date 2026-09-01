@@ -1,5 +1,6 @@
 import { SPACES, MIN_CONSUMO, type SpaceId } from "../data/spaces";
 import { calcTotal, fmt } from "../lib/pricing";
+import { formatTime } from "../lib/time";
 import MagneticButton from "./MagneticButton";
 
 interface Props {
@@ -43,7 +44,7 @@ export default function StepSummary({
       <h3 className="mt-0 mb-4 text-lg font-semibold">{stepNo} · Resumen y pago</h3>
 
       <div className="mb-2 rounded-xl bg-card2 p-3.5 text-[0.85rem] text-muted">
-        {s.name} · {date} · {startTime} · {hours}h
+        {s.name} · {date} · {startTime ? formatTime(startTime) : ""} · {hours}h
       </div>
 
       <div>

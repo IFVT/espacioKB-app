@@ -1,5 +1,6 @@
 import crypto from "node:crypto"
 import { SPACES, type SpaceId } from "./spaces.js"
+import { formatTime } from "./time.js"
 
 // ---------------------------------------------------------------------------
 // Notificaciones al confirmarse una reserva: correo (Resend) + evento en Google
@@ -72,7 +73,7 @@ export async function sendConfirmationEmails(r: ConfirmedReservation): Promise<v
 
   const sName = spaceName(r.space)
   const extras = extraNames(r.space, r.extras)
-  const hora = r.start_time.slice(0, 5)
+  const hora = formatTime(r.start_time)
   const extrasHtml = extras.length ? `<p><b>Extras:</b> ${extras.join(", ")}</p>` : ""
 
   const detalle = `

@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import type { SpaceId } from "./data/spaces";
 import { SPACES } from "./data/spaces";
 import { calcTotal, fmt } from "./lib/pricing";
+import { formatTime } from "./lib/time";
 import { createPayment } from "./lib/api";
 import type { Customer } from "./lib/types";
 import MagneticButton from "./components/MagneticButton";
@@ -192,7 +193,7 @@ export default function App() {
           </div>
           <h3 className="my-1 text-lg font-semibold">¡Reserva confirmada!</h3>
           <p className="mb-4 text-[0.9rem] text-muted">
-            {spaceId && SPACES[spaceId].name} · {date} · {startTime} · {hours}h ·{" "}
+            {spaceId && SPACES[spaceId].name} · {date} · {startTime ? formatTime(startTime) : ""} · {hours}h ·{" "}
             {fmt(done.total)}. (Demostración)
           </p>
           <MagneticButton

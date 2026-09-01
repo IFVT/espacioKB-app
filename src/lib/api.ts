@@ -97,7 +97,7 @@ export async function createPayment(
 // Muestra todas las horas que caben antes del cierre; no descuenta reservas.
 function mockAvailability(date: string, hours: number): AvailabilityResponse {
   const slots: string[] = [];
-  const lastStart = SCHEDULE.closeHour - hours;
+  const lastStart = Math.min(SCHEDULE.closeHour - hours, 23); // inicio máx 23:00
   for (let h = SCHEDULE.openHour; h <= lastStart; h++) {
     slots.push(`${String(h).padStart(2, "0")}:00`);
   }
