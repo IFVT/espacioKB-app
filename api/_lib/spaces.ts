@@ -89,7 +89,7 @@ export const MIN_CONSUMO = (hours: number): number => (hours >= 4 ? 400000 : 200
 // Reglas de agenda (defaults POR CONFIRMAR con la dueña — ver sección 7 del doc).
 export const SCHEDULE = {
   timezone: "America/Bogota",
-  days: [4, 5, 6, 0], // jueves, viernes, sábado, domingo (0=dom … 6=sáb)
+  days: [4, 5, 6], // jueves, viernes, sábado (0=dom … 6=sáb). Domingo NO abre.
   openHour: 19, // 7 p.m.
   closeHour: 26, // 2 a.m. del día siguiente (horas "extendidas": 24=medianoche, 26=2am)
   slotStepMinutes: 60, // reservas empiezan en hora en punto
