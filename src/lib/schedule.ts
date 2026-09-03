@@ -2,8 +2,11 @@ import { SCHEDULE } from "../data/spaces";
 import { formatTime } from "./time";
 
 // Horario de atención legible (derivado de SCHEDULE), para mostrarlo en la UI.
+// Nota: el cierre se MUESTRA como :30 (margen de cortesía) aunque la última
+// reserva termina en closeHour (2:00 a.m.). Esto solo afecta el texto, no la
+// lógica de reservas.
 export const openHoursLabel = `${formatTime(`${SCHEDULE.openHour}:00`)} – ${formatTime(
-  `${SCHEDULE.closeHour}:00`,
+  `${SCHEDULE.closeHour}:30`,
 )}`;
 export const openDaysLabel = "Jueves a sábado";
 
