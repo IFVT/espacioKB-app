@@ -111,10 +111,10 @@ export default function StepSchedule({
                       key={s.time}
                       type="button"
                       onClick={() => onPickTime(s.time)}
-                      className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition ${
+                      className={`cursor-pointer rounded-xl border px-3 py-2 text-sm font-medium transition ${
                         startTime === s.time
-                          ? "border-accent bg-card2 text-txt"
-                          : "border-black bg-card2 text-muted hover:border-accent"
+                          ? "border-black bg-accent text-black shadow-sm"
+                          : "border-black bg-card2 text-txt hover:border-accent hover:bg-white"
                       }`}
                     >
                       {formatTime(s.time)}
