@@ -53,19 +53,22 @@ const parseTaken = (s: string): number => {
  * también se le suma, de modo que dos reservas quedan separadas al menos
  * `bufferMinutes` a cada lado.
  */
+export type SlotStatus = "free" | "taken" | "unavailable";
+
 export interface StartOption {
-  time: string; // "HH:00" (puede ser "24:00" = medianoche, para una reserva de 2h)
-  taken: boolean; // true = la sala ya está ocupada en esa franja
+  time: string; // "HH:00" (24:00 = medianoche)
+  // free = seleccionable · taken = sala ocupada (rojo) ·
+  // unavailable = no aplica para esta duración/anticipación (gris, deshabilitado)
+  status: SlotStatus;
 }
 
 /**
- * TODAS las horas de inicio posibles para la fecha/duración (según SCHEDULE),
- * marcando cuáles están OCUPADAS. El front muestra las libres seleccionables y
- * las ocupadas en rojo (cada espacio es una sola sala). Las que no respetan la
- * anticipación mínima se omiten.
- *
- * El inicio llega hasta las 24:00 (medianoche) para permitir una reserva de 2h
- * que termine a las 2am. El fin puede cruzar la medianoche: la base lo maneja.
+ * SIEMPRE devuelve todas las horas de inicio posibles: desde la apertura (7pm)
+ * hasta la medianoche (24:00, el último inicio posible para una reserva de 2h).
+ * Las que no aplican para la duración elegida (terminarían después del cierre a
+ * las 2am) o no respetan la anticipación mínima se marcan "unavailable" en vez
+ * de esconderse, para que el horario de atención quede siempre visible. Las
+ * ocupadas se marcan "taken" (cada espacio es una sola sala).
  */
 export function startTimeOptions(
   dateISO: string,
@@ -79,16 +82,24 @@ export function startTimeOptions(
     end: parseTaken(t.end_at),
   }));
 
+  const MAX_START = 24; // medianoche
   const options: StartOption[] = [];
-  const lastStart = Math.min(SCHEDULE.closeHour - hours, 24);
 
-  for (let h = SCHEDULE.openHour; h <= lastStart; h++) {
-    const start = wallMs(dateISO, h);
-    if (start < earliest) continue; // demasiado pronto: no se ofrece
-
-    const end = start + hours * 3600 * 1000 + bufferMs;
-    const overlaps = takenMs.some((t) => start < t.end && t.start < end);
-    options.push({ time: HHMM(h), taken: overlaps });
+  for (let h = SCHEDULE.openHour; h <= MAX_START; h++) {
+    let status: SlotStatus;
+    if (h + hours > SCHEDULE.closeHour) {
+      status = "unavailable"; // terminaría después del cierre (2am)
+    } else {
+      const start = wallMs(dateISO, h);
+      if (start < earliest) {
+        status = "unavailable"; // no respeta la anticipación mínima
+      } else {
+        const end = start + hours * 3600 * 1000 + bufferMs;
+        const overlaps = takenMs.some((t) => start < t.end && t.start < end);
+        status = overlaps ? "taken" : "free";
+      }
+    }
+    options.push({ time: HHMM(h), status });
   }
   return options;
 }

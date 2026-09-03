@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { SpaceId } from "../data/spaces";
 import { getAvailability, type StartOption } from "../lib/api";
 import { formatTime } from "../lib/time";
+import { openDaysLabel, openHoursLabel } from "../lib/schedule";
 import Calendar from "./Calendar";
 import MagneticButton from "./MagneticButton";
 
@@ -79,19 +80,33 @@ export default function StepSchedule({
           ) : (
             <>
               <div className="flex flex-wrap gap-2">
-                {slots.map((s) =>
-                  s.taken ? (
-                    <span
-                      key={s.time}
-                      title="Ocupado"
-                      className="flex cursor-not-allowed flex-col items-center rounded-xl border border-red-300 bg-red-50 px-3 py-1.5 text-sm leading-tight text-red-400"
-                    >
-                      {formatTime(s.time)}
-                      <span className="text-[0.62rem] font-semibold uppercase tracking-wide">
-                        Ocupado
+                {slots.map((s) => {
+                  if (s.status === "taken") {
+                    return (
+                      <span
+                        key={s.time}
+                        title="Ocupado"
+                        className="flex cursor-not-allowed flex-col items-center rounded-xl border border-red-300 bg-red-50 px-3 py-1.5 text-sm leading-tight text-red-400"
+                      >
+                        {formatTime(s.time)}
+                        <span className="text-[0.62rem] font-semibold uppercase tracking-wide">
+                          Ocupado
+                        </span>
                       </span>
-                    </span>
-                  ) : (
+                    );
+                  }
+                  if (s.status === "unavailable") {
+                    return (
+                      <span
+                        key={s.time}
+                        title="No disponible para esta duración"
+                        className="cursor-not-allowed rounded-xl border border-line bg-card2 px-3 py-2 text-sm text-muted opacity-45"
+                      >
+                        {formatTime(s.time)}
+                      </span>
+                    );
+                  }
+                  return (
                     <button
                       key={s.time}
                       type="button"
@@ -104,12 +119,16 @@ export default function StepSchedule({
                     >
                       {formatTime(s.time)}
                     </button>
-                  ),
-                )}
+                  );
+                })}
               </div>
-              {!slots.some((s) => !s.taken) && (
-                <p className="mt-2 text-[0.82rem] text-red-500">
-                  Ese día ya no tiene cupos libres para esta duración. Prueba otra fecha u otra duración.
+              <p className="mt-2 text-[0.72rem] text-muted">
+                Atención {openDaysLabel.toLowerCase()} de {openHoursLabel}. Las horas en gris no
+                aplican para la duración elegida.
+              </p>
+              {!slots.some((s) => s.status === "free") && (
+                <p className="mt-1 text-[0.82rem] text-red-500">
+                  Ese día no tiene horas libres para esta duración. Prueba otra fecha u otra duración.
                 </p>
               )}
             </>

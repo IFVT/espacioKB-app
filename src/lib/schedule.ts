@@ -1,4 +1,11 @@
 import { SCHEDULE } from "../data/spaces";
+import { formatTime } from "./time";
+
+// Horario de atención legible (derivado de SCHEDULE), para mostrarlo en la UI.
+export const openHoursLabel = `${formatTime(`${SCHEDULE.openHour}:00`)} – ${formatTime(
+  `${SCHEDULE.closeHour}:00`,
+)}`;
+export const openDaysLabel = "Jueves a sábado";
 
 export function toISO(d: Date): string {
   const y = d.getFullYear();

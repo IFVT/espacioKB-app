@@ -17,7 +17,7 @@ const allowMock = import.meta.env.DEV || import.meta.env.VITE_DEMO === "true";
 
 export interface StartOption {
   time: string; // "HH:00" (24:00 = medianoche)
-  taken: boolean; // true = sala ocupada en esa franja
+  status: "free" | "taken" | "unavailable"; // libre / ocupada / no disponible para la selección
 }
 
 export interface AvailabilityResponse {
@@ -102,9 +102,11 @@ export async function createPayment(
 // Muestra todas las horas que caben antes del cierre; no descuenta reservas.
 function mockAvailability(date: string, hours: number): AvailabilityResponse {
   const slots: StartOption[] = [];
-  const lastStart = Math.min(SCHEDULE.closeHour - hours, 24); // inicio máx 24:00 (medianoche)
-  for (let h = SCHEDULE.openHour; h <= lastStart; h++) {
-    slots.push({ time: `${String(h).padStart(2, "0")}:00`, taken: false });
+  for (let h = SCHEDULE.openHour; h <= 24; h++) {
+    slots.push({
+      time: `${String(h).padStart(2, "0")}:00`,
+      status: h + hours > SCHEDULE.closeHour ? "unavailable" : "free",
+    });
   }
   return { date, slots };
 }

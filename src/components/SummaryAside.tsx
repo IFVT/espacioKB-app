@@ -1,6 +1,7 @@
 import { SPACES, MIN_CONSUMO, type SpaceId } from "../data/spaces";
 import { calcTotal, fmt } from "../lib/pricing";
 import { formatRange } from "../lib/time";
+import { openDaysLabel, openHoursLabel } from "../lib/schedule";
 
 interface Props {
   spaceId: SpaceId;
@@ -17,7 +18,15 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
   const minC = MIN_CONSUMO(hours);
 
   return (
-    <div className="rounded-kb border border-black bg-card p-4">
+    <div className="space-y-3">
+      <div className="rounded-kb border border-black bg-card2 p-3 text-[0.8rem]">
+        <div className="font-semibold text-txt">Horario de atención</div>
+        <div className="text-muted">
+          {openDaysLabel} · {openHoursLabel}
+        </div>
+      </div>
+
+      <div className="rounded-kb border border-black bg-card p-4">
       <h4 className="mt-0 mb-3 text-base font-semibold">Tu reserva</h4>
 
       <div className="mb-3 rounded-lg bg-card2 p-3 text-[0.82rem]">
@@ -48,6 +57,7 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
       <p className="mt-2 text-[0.72rem] text-muted">
         + consumo mínimo de {fmt(minC)} que se paga en el lugar.
       </p>
+      </div>
     </div>
   );
 }
