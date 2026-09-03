@@ -82,7 +82,9 @@ export function startTimeOptions(
     end: parseTaken(t.end_at),
   }));
 
-  const MAX_START = 24; // medianoche
+  // Se muestra hasta las 2am (26): 1am y 2am siempre salen "unavailable" (no se
+  // puede INICIAR tan tarde con el mínimo de 2h), pero dejan visible el cierre.
+  const MAX_START = 26;
   const options: StartOption[] = [];
 
   for (let h = SCHEDULE.openHour; h <= MAX_START; h++) {
