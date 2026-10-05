@@ -1,6 +1,6 @@
 import { SPACES, MIN_CONSUMO, type SpaceId } from "../data/spaces";
 import { calcTotal, fmt } from "../lib/pricing";
-import { formatRange } from "../lib/time";
+import { formatRange, formatDate } from "../lib/time";
 import { openDaysLabel, openHoursLabel } from "../lib/schedule";
 
 interface Props {
@@ -33,7 +33,7 @@ export default function SummaryAside({ spaceId, hours, date, startTime, extras }
         <div className="font-semibold text-txt">{s.name}</div>
         <div className="text-muted">
           {hours} horas
-          {date ? ` · ${date}` : ""}
+          {date ? ` · ${formatDate(date)}` : ""}
         </div>
         <div className="mt-0.5 font-medium text-txt">
           {startTime ? `Hora: ${formatRange(startTime, hours)}` : "Elige la hora de inicio"}
