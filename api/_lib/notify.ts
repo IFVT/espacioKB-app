@@ -87,7 +87,7 @@ export async function sendConfirmationEmails(r: ConfirmedReservation): Promise<v
   if (negocio) {
     await sendEmail(
       negocio,
-      `Nueva reserva · ${sName} · ${r.date} ${hora}`,
+      `Nueva reserva · ${sName} · ${formatDate(r.date)} ${hora}`,
       `<h2>Nueva reserva confirmada</h2>${detalle}
        <p><b>Cliente:</b> ${r.customer_name ?? "-"}<br/>
           <b>Tel:</b> ${r.customer_phone ?? "-"}<br/>
