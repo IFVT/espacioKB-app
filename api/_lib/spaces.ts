@@ -79,7 +79,10 @@ export const SPACES: Record<SpaceId, Space> = {
       },
     ],
     includesPhone: true,
-    image: "/img/casita.jpg",
+    // No hay foto de sala de La Casita todavía; se usa el setup de CDJ como
+    // imagen representativa del audio room. Cambiar por una foto de la sala
+    // cuando exista (p.ej. /img/casita.jpg).
+    image: "/img/casita-cdj.jpg",
   },
 };
 

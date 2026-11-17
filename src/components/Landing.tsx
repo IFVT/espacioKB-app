@@ -21,7 +21,7 @@ export default function Landing({ onPick }: Props) {
             onClick={() => onPick(s.id)}
             className="cursor-pointer overflow-hidden rounded-kb border-2 border-black text-left transition hover:border-accent"
           >
-            <Photo alt={s.name} className="h-40 w-full" />
+            <Photo src={s.image} alt={s.name} className="h-40 w-full" />
             <div className="p-4">
               <h4 className="m-0 text-base font-semibold">{s.name}</h4>
               <div className="text-[0.82rem] text-muted">{s.tagline}</div>
